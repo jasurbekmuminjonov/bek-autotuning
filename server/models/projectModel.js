@@ -22,7 +22,7 @@ const projectSchema = new mongoose.Schema({
             {
                 user_id: {   //user id si
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: 'aser',
+                    ref: 'user',
                     required: true
                 },
                 amount_to_paid: {  //xizmat narxi
@@ -30,14 +30,26 @@ const projectSchema = new mongoose.Schema({
                     required: true
                 },
                 user_salary_amount: { //user uchun beriladigan maosh
-                    type: Number,
+                    type: {
+                        amount: Number,
+                        currency: {
+                            type: String,
+                            enum: ['USD', 'UZS']
+                        }
+                    },
                     required: true
                 },
                 spendings: {  //umumiy harajatlar
                     type: [
                         {
-                            amount: {  //harajat summasi
-                                type: Number,
+                            amount: { //user uchun beriladigan maosh
+                                type: {
+                                    amount: Number,
+                                    currency: {
+                                        type: String,
+                                        enum: ['USD', 'UZS']
+                                    }
+                                },
                                 required: true
                             },
                             description: { //harajat tavsifi
@@ -62,9 +74,25 @@ const projectSchema = new mongoose.Schema({
                     type: Date,
                     required: true
                 },
+                started_time: {  //xizmat boshlangan vaqti
+                    type: Date,
+                    required: true
+                },
+                approved_time: {  //xizmat qabul qilingan vaqti
+                    type: Date,
+                    required: true
+                },
+                rejected_time: {  //xizmat rad etilgan vaqti
+                    type: Date,
+                    required: true
+                },
+                ended_time: { //xizmat tugatilgan vaqti
+                    type: Date,
+                    required: true
+                },
                 status: { //status - pending:qabul qilish  kutilayapti, inprogress:xizmat bajarilyapti, finished:xizmat tugatildi, approved:tasdiqlandi
                     type: String,
-                    enum: ['pending', 'inprogress', 'finished', 'approved'],
+                    enum: ['pending', 'inprogress', 'finished', 'approved', 'rejected'],
                     default: 'pending'
                 },
                 index: { //nechanchi tartibda qilish
@@ -76,36 +104,60 @@ const projectSchema = new mongoose.Schema({
         default: [],
         required: true
     },
-    status: { //status - inprogress:qilinayapti, finished:tugatildi
+    status: { //status - inprogress: qilinayapti, finished: tugatildi
         type: String,
         enum: ['inprogress', 'finished'],
         default: 'inprogress'
     },
-    total_amount_to_paid: {  //client to'laydigan umumiy summa
-        type: Number,
-        required: true,
-        default: 0
-
+    total_amount_to_paid: { //user uchun beriladigan maosh
+        type: {
+            amount: Number,
+            currency: {
+                type: String,
+                enum: ['USD', 'UZS']
+            }
+        },
+        required: true
     },
-    total_amount_paid: { //client to'lagan umumiy summa
-        type: Number,
-        required: true,
-        default: 0
+    total_amount_paid: { //user uchun beriladigan maosh
+        type: {
+            amount: Number,
+            currency: {
+                type: String,
+                enum: ['USD', 'UZS']
+            }
+        },
+        required: true
     },
-    total_spending_amount: { //sarflangan umumiy summa
-        type: Number,
-        required: true,
-        default: 0
-
+    total_spending_amount: { //user uchun beriladigan maosh
+        type: {
+            amount: Number,
+            currency: {
+                type: String,
+                enum: ['USD', 'UZS']
+            }
+        },
+        required: true
     },
-    remained_amount_to_paid: { //client to'laydigan umumiy summa - client to'lagan umumiy summa
-        type: Number,
-        required: true,
-        default: 0
+    remained_amount_to_paid: { //user uchun beriladigan maosh
+        type: {
+            amount: Number,
+            currency: {
+                type: String,
+                enum: ['USD', 'UZS']
+            }
+        },
+        required: true
     },
     payment_log: [{  //to'langan pullar
-        amount: { //summa
-            type: Number,
+        amount: { //user uchun beriladigan maosh
+            type: {
+                amount: Number,
+                currency: {
+                    type: String,
+                    enum: ['USD', 'UZS']
+                }
+            },
             required: true
         },
         paid_date: { //sana

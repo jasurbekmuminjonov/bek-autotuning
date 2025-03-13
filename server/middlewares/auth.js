@@ -13,7 +13,7 @@ async function auth(req, res, next) {
         next();
     } catch (e) {
         console.error(e.message);
-        return res.status(401).json({ message: "Ошибка сервера или вы не авторизованы" });
+        return res.status(401).json({ message: "Serverda xato yoki avtorizatsiyadan o'tmadingiz" });
     }
 }
 
