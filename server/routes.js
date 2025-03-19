@@ -6,6 +6,7 @@ const { createService, getService, updateService, deleteService } = require('./c
 const { getProject, createProject, updateProject, deleteProject, finishProject, getProjectByUser, getAllProjectByUser, createPayment } = require('./controllers/projectController');
 const { getUsers, getUser, getProjectsByUser, getProjectsForApprove, getProjectsForFinish, approveService, finishService, rejectService, getBalance, editUser } = require('./controllers/userController');
 const { createExpense, getExpense, updateExpense, deleteExpense } = require('./controllers/expenseController');
+const { recordAttendance } = require('./controllers/attendanceController');
 const rt = express.Router();
 
 rt.post('/register/admin', createAdmin) //create admin
@@ -45,5 +46,7 @@ rt.post('/expense/create', auth, createExpense) //create expense
 rt.get('/expense/get', auth, getExpense) //create expense
 rt.put('/expense/update/:id', auth, updateExpense) //update expense
 rt.delete('/expense/delete/:id', auth, deleteExpense) //delete expense
+
+rt.post("/attendance/create", recordAttendance)
 
 module.exports = rt;

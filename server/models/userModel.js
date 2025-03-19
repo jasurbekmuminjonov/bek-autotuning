@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     login: {
-        type: String,   
+        type: String,
         required: true,
         unique: true
     },
@@ -59,6 +59,13 @@ const userSchema = new mongoose.Schema({
                 }
             }
         ],
+        default: []
+    },
+    attendance: {
+        type: [{
+            arrive_time: Date,
+            leave_time: Date
+        }],
         default: []
     }
 

@@ -251,6 +251,18 @@ header > button {
   padding: 6px;
   border: 1px solid #ccc;
 }
+.modal_form > label > input {
+  width: 100%;
+  height: 40px;
+  padding: 6px;
+  border: 1px solid #ccc;
+}
+.modal_form > label > select {
+  width: 100%;
+  height: 40px;
+  padding: 6px;
+  border: 1px solid #ccc;
+}
 .modal_form > button {
   width: 100%;
   height: 40px;
@@ -415,4 +427,43 @@ header > button {
   justify-content: center;
   width: 40px;
   border: 1px solid #ccc;
+}
+.spending_page {
+  width: 100%;
+  display: flex;
+  height: calc(100svh - 60px);
+  background-color: #fff;
+}
+.spendings_table {
+  width: 70%;
+  height: 100%;
+}
+
+.spendings_form {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  padding: 6px;
+  gap: 6px;
+}
+.spendings_form > label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.spendings_form > label > input {
+  width: 100%;
+  height: 35px;
+  border: 1px solid #ccc;
+}
+.spendings_form > button {
+  width: 100%;
+  height: 35px;
+  background-color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
 }
