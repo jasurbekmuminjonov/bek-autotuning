@@ -3,8 +3,8 @@ const { createAdmin, createManager, createUser } = require('./controllers/adminC
 const auth = require('./middlewares/auth');
 const { login } = require('./controllers/authController');
 const { createService, getService, updateService, deleteService } = require('./controllers/serviceController');
-const { getProject, createProject, updateProject, deleteProject } = require('./controllers/projectController');
-const { getUsers, getUser, getProjectsByUser, getProjectsForApprove, finishProject, approveProject, rejectProject } = require('./controllers/userController');
+const { getProject, createProject, updateProject, deleteProject, finishProject, getProjectByUser, getAllProjectByUser, createPayment } = require('./controllers/projectController');
+const { getUsers, getUser, getProjectsByUser, getProjectsForApprove, getProjectsForFinish, approveService, finishService, rejectService, getBalance, editUser } = require('./controllers/userController');
 const { createExpense, getExpense, updateExpense, deleteExpense } = require('./controllers/expenseController');
 const rt = express.Router();
 
@@ -22,17 +22,24 @@ rt.delete('/service/delete/:id', auth, deleteService) //delete service
 rt.get("/project/get", auth, getProject) //get project
 rt.get("/project/user", auth, getProjectsByUser) //get projects by user id
 rt.get("/project/approve", auth, getProjectsForApprove) //get projects by user id for approval
+rt.get("/project/finish", auth, getProjectsForFinish) //get projects by user id for finish
 // rt.get("/project/start", auth, getProjectsForStart)
 // rt.put("/project/start/:project_id", auth, startProject) 
 rt.post("/project/create", auth, createProject) //create project
-rt.put("/project/update", auth, updateProject) //update project
-rt.delete("/project/delete", auth, deleteProject) //delete project
+rt.put("/project/update/:id", auth, updateProject) //update project
+rt.delete("/project/delete/:id", auth, deleteProject) //delete project
 rt.put("/project/finish/:project_id", auth, finishProject) //finish project
-rt.put("/project/approve/:project_id", auth, approveProject) //approve project
-rt.put("/project/reject/:project_id", auth, rejectProject) //approve project
+rt.put("/project/service/finish/:project_id", auth, finishService) //finish service
+rt.put("/project/service/approve/:project_id", auth, approveService) //approve service
+rt.put("/project/service/reject/:project_id", auth, rejectService) //approve service
+rt.put("/project/pay/:project_id", auth, createPayment) //create payment
 
-rt.get('/user/get/all', auth, getUsers) //get all users
 rt.get('/user/get/', auth, getUser) //get user by id
+rt.get('/user/get/all', auth, getUsers) //get all users
+rt.get("/user/projects/:user_id", auth, getProjectByUser) //get project by user
+rt.get("/user/all/projects/:user_id", auth, getAllProjectByUser) //get all project by user
+rt.get('/user/:user_id/', auth, getBalance)
+rt.put("/user/:user_id", auth, editUser) //update user
 
 rt.post('/expense/create', auth, createExpense) //create expense
 rt.get('/expense/get', auth, getExpense) //create expense

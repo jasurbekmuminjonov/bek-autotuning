@@ -1,0 +1,418 @@
+@import url(https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;800;900&display=swap);
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+body {
+  display: flex;
+  justify-content: center;
+  font-family: "Roboto", sans-serif;
+}
+
+:root {
+  --primary: #1677ff;
+  --secondary: #f4f4f4;
+}
+button,
+input,
+select,
+textarea,
+a {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding-inline: 6px;
+  display: flex;
+  align-items: center;
+}
+.wrapper {
+  width: 100vw;
+  max-width: 1920px;
+  height: 100svh;
+}
+
+div::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.auth_page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  background-image: url(./login_bg.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+.auth_form {
+  width: 600px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+.auth_form > p {
+  font-size: 32px;
+  font-weight: 500;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+}
+.auth_form > input {
+  height: 80px;
+  padding-inline: 24px;
+  font-size: 24px;
+}
+.auth_form > button {
+  height: 80px;
+  padding-inline: 24px;
+  font-size: 32px;
+  display: flex;
+  justify-content: center;
+  background-color: var(--primary);
+  color: #fff;
+  font-weight: 500;
+}
+.error {
+  color: red;
+}
+
+.manager_layout {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  background-color: #f4f4f4;
+}
+.manager_layout > aside {
+  min-height: 100%;
+  width: 230px;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 12px;
+  color: #fff;
+  background-color: var(--primary);
+}
+.manager_layout > aside > p {
+  font-size: 18px;
+  font-weight: 500;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.manager_layout > aside > .links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.manager_layout > aside > .links > a {
+  width: 100%;
+  height: 40px;
+  font-weight: 500;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.manager_layout > aside > .links > .active {
+  padding-inline-start: 12px;
+  border-left: 2px solid #fff;
+}
+main {
+  flex-grow: 1;
+  height: 100%;
+  background-color: var(--secondary);
+  display: flex;
+  flex-direction: column;
+}
+header {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  background-color: var(--primary);
+  justify-content: space-between;
+  border-left: 1px solid #fff;
+  color: #fff;
+}
+header > button {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  gap: 6px;
+  border: 1px solid #ccc;
+}
+
+.manager_page {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  height: 100%;
+}
+.manager_page_header {
+  width: 100%;
+  height: 40px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.manager_page_header_actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.manager_page_header > p {
+  font-size: 18px;
+  font-weight: 500;
+}
+.manager_page_header_actions > button {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: var(--primary);
+  color: #fff;
+}
+.table_actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.table_actions > button {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: #fff;
+  &:disabled {
+    background-color: #ccc;
+    color: #fff;
+    cursor: not-allowed;
+  }
+}
+.user_projects {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px;
+}
+.project_card {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+.project_title {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+}
+.project_title > b {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+}
+.project_title > b > span {
+  display: flex;
+  align-items: center;
+  padding-inline: 4px;
+}
+.modal_form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.modal_form > input {
+  width: 100%;
+  height: 40px;
+  padding: 6px;
+  border: 1px solid #ccc;
+}
+.modal_form > button {
+  width: 100%;
+  height: 40px;
+  background-color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+}
+
+.manager_page_header_actions > select,
+.manager_page_header_actions > input {
+  padding: 10px;
+  width: auto;
+}
+.manager_page_header_actions > input[type="search"] {
+  width: 450px;
+}
+
+.phone_input > span {
+  height: 35px;
+  width: 50px;
+  display: flex;
+  align-items: center;
+}
+.addproject_form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  /* height: 100%; */
+  gap: 12px;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f4f4f4;
+}
+.forms {
+  width: 100%;
+  display: flex;
+}
+.form_part {
+  flex-grow: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.form_part > p {
+  font-size: 20px;
+  font-weight: bold;
+}
+.form_part > label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form_part > label > p {
+  display: flex;
+  gap: 2px;
+}
+.form_part > label > input {
+  border: 1px solid #ccc;
+  height: 35px;
+  width: 250px;
+}
+.service > label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.service > label > p {
+  display: flex;
+  gap: 2px;
+}
+.service {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid #ccc;
+  padding-block-end: 6px;
+}
+.service > label > input {
+  border: 1px solid #ccc;
+  height: 35px;
+  width: 250px;
+}
+.service > label > select {
+  height: 35px;
+  width: 250px;
+  border: 1px solid #ccc;
+}
+.service > button {
+  width: 125px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: #fff;
+}
+.spending > label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.spending > label > p {
+  display: flex;
+  gap: 2px;
+}
+.spending {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block-end: 6px;
+}
+.spending > label > input {
+  border: 1px solid #ccc;
+  height: 35px;
+  width: 250px;
+}
+.spending > label > select {
+  height: 35px;
+  width: 250px;
+  border: 1px solid #ccc;
+}
+.form_part > label > select {
+  height: 35px;
+  width: 250px;
+  border: 1px solid #ccc;
+}
+.spending > button {
+  width: 125px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: #fff;
+}
+.form_part > button {
+  width: 250px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: #fff;
+}
+.addproject_form > button {
+  width: 250px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: #fff;
+}
+.manager_page > button {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  border: 1px solid #ccc;
+}

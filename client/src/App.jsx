@@ -1,35 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import AdminLayout from './pages/admin/adminLayout';
+import ManagerLayout from './pages/manager/managerLayout';
+import UserLayout from './pages/user/userLayout';
+import Login from './pages/login/login';
+import { useSelector } from 'react-redux';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
+  const role = localStorage.getItem('role');
+  const token = localStorage.getItem('access_token');
+  const loading = useSelector
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className='wrapper'>
+      {token ? role === "admin" ? <AdminLayout /> : role === "manager" ? <ManagerLayout /> : role === "user" ? <UserLayout /> : <Login /> : <Login />}
+    </div>
+  );
+};
 
-export default App
+
+export default App;
