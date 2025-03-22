@@ -1,6 +1,5 @@
 const Service = require('../models/serviceModel');
 
-
 exports.getService = async (req, res) => {
     try {
         const { admin_id } = req.user
@@ -11,7 +10,6 @@ exports.getService = async (req, res) => {
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 }
-
 exports.createService = async (req, res) => {
     try {
         const { admin_id } = req.user
@@ -25,7 +23,6 @@ exports.createService = async (req, res) => {
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 }
-
 exports.updateService = async (req, res) => {
     try {
         const { service_name } = req.body;

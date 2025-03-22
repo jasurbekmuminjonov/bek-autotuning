@@ -14,11 +14,11 @@ const Projects = () => {
     const [deleteProject, { isLoading: deleteLoading, isError: deleteIsError }] = useDeleteProjectMutation()
     const [finishProject, { isLoading: finishLoading, isError: finishIsError }] = useFinishProjectMutation()
     const { data: projects = [] } = useGetProjectsQuery()
+    const { data: users = [] } = useGetUsersQuery()
+    const { data: services = [] } = useGetServiceQuery()
     const [payProject] = usePayProjectMutation()
     const [open, setOpen] = useState(false);
     const [payingProject, setPayingProject] = useState("");
-    const { data: services = [] } = useGetServiceQuery()
-    const { data: users = [] } = useGetUsersQuery()
     const navigate = useNavigate()
     const [filters, setFilters] = useState({
         status: "",

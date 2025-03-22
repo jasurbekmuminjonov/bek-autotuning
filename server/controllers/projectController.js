@@ -58,11 +58,11 @@ exports.createProject = async (req, res) => {
             });
         });
 
-        const firstService = req.body.services_providing.find(service => service.index === 1);
-        if (firstService) {
-            firstService.status = "inprogress";
-            firstService.started_time = new Date().toISOString();
-        }
+        // const firstService = req.body.services_providing.find(service => service.index === 1);
+        // if (firstService) {
+        //     firstService.status = "inprogress";
+        //     firstService.started_time = new Date().toISOString();
+        // }
 
         req.body.total_amount_to_paid = Math.round(totalAmountToPaid * 100) / 100;
         req.body.total_spending_amount = Math.round(totalSpendingAmount * 100) / 100;

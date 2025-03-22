@@ -14,6 +14,11 @@ export const projectApi = apiSlice.injectEndpoints({
             query: () => "/project/get/",
             providesTags: ["Project"],
         }),
+        getProjectsForApprove: builder.query({
+            query: () => '/project/approve/',
+            providesTags: ["Project"],
+        }),
+
         editProject: builder.mutation({
             query: ({ body, project_id }) => ({
                 url: `/project/update/${project_id}`,
@@ -47,8 +52,40 @@ export const projectApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Project"],
         }),
+        startProject: builder.mutation({
+            query: ({ project_id, service_id }) => ({
+                url: `/project/start/${project_id}/${service_id}`,
+                method: "PUT",
+                body: {},
+            }),
+            invalidatesTags: ["Project"],
+        }),
+        finishProject: builder.mutation({
+            query: ({ project_id, service_id }) => ({
+                url: `/project/service/finish/${project_id}/${service_id}`,
+                method: "PUT",
+                body: {},
+            }),
+            invalidatesTags: ["Project"],
+        }),
+        approveProject: builder.mutation({
+            query: ({ project_id, approving_service, starting_service }) => ({
+                url: `/project/service/approve?project_id=${project_id}&approving_service=${approving_service}&starting_service=${starting_service}`,
+                method: "PUT",
+                body: {},
+            }),
+            invalidatesTags: ["Project"],
+        }),
+        rejectProject: builder.mutation({
+            query: ({ project_id, rejecting_service }) => ({
+                url: `/project/service/reject?project_id=${project_id}&rejecting_service=${rejecting_service}`,
+                method: "PUT",
+                body: {},
+            }),
+            invalidatesTags: ["Project"],
+        })
 
     })
 })
 
-export const { useCreateProjectMutation, usePayProjectMutation, useGetProjectsQuery, useEditProjectMutation, useDeleteProjectMutation, useFinishProjectMutation } = projectApi;
+export const { useCreateProjectMutation, useGetProjectsForApproveQuery, usePayProjectMutation, useGetProjectsQuery, useEditProjectMutation, useDeleteProjectMutation, useFinishProjectMutation, useApproveProjectMutation, useStartProjectMutation, useRejectProjectMutation } = projectApi;

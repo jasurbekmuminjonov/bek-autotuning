@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const Project = require('../models/projectModel');
+const bcrypt = require('bcryptjs');
 exports.getUsers = async (req, res) => {
     try {
         const { admin_id } = req.user
@@ -21,95 +22,47 @@ exports.getUser = async (req, res) => {
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 }
-// exports.getBalance = async (req, res) => {
-//     try {
-//         const { user_id } = req.params;
-//         const { admin_id } = req.user;
-
-//         const user = await User.findById(user_id);
-//         if (!user) {
-//             return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
-//         }
-
-//         const allProjects = await Project.find({
-//             admin_id,
-//             "services_providing.user_id": user_id
-//         });
-
-//         const total_balance = allProjects.reduce((acc, project) => {
-//             project.services_providing.forEach(service => {
-//                 if (service.user_id.toString() === user_id.toString()) {
-//                     if (service.user_salary_amount?.currency === 'USD') {
-//                         acc.usd += service.user_salary_amount.amount || 0;
-//                     } else if (service.user_salary_amount?.currency === 'UZS') {
-//                         acc.uzs += service.user_salary_amount.amount || 0;
-//                     }
-//                 }
-//             });
-//             return acc;
-//         }, { usd: 0, uzs: 0 });
-
-//         res.json({ total_balance });
-//     } catch (err) {
-//         console.error(err.message);
-//         return res.status(500).json({ message: "Serverda xatolik" });
-//     }
-// };
 exports.getBalance = async (req, res) => {
     try {
-        const { user_id } = req.params;
+        const { user_id } = req.query;
         const { admin_id } = req.user;
-
-        const user = await User.findById(user_id);
-        if (!user) {
-            return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
-        }
-        const allProjects = await Project.find({
+        const projects = await Project.find({
             admin_id,
-            "services_providing.user_id": user_id
-        });
-        const balance = {
-            total_balance: 0,
-            pending_balance: 0,
-            inprogress_balance: 0,
-            finished_balance: 0,
-            approved_balance: 0,
-            rejected_balance: 0
-        };
-        allProjects.forEach(project => {
-            project.services_providing.forEach(service => {
-                if (service.user_id.toString() === user_id.toString()) {
-                    const amount = service.user_salary_amount?.amount || 0;
-
-                    balance.total_balance += amount;
-
-                    switch (service.status) {
-                        case 'pending':
-                            balance.pending_balance += amount;
-                            break;
-                        case 'inprogress':
-                            balance.inprogress_balance += amount;
-                            break;
-                        case 'finished':
-                            balance.finished_balance += amount;
-                            break;
-                        case 'approved':
-                            balance.approved_balance += amount;
-                            break;
-                        case 'rejected':
-                            balance.rejected_balance += amount;
-                            break;
-                    }
+            services_providing: {
+                $elemMatch: {
+                    user_id,
+                    status: 'approved'
                 }
-            });
+            }
         });
-
-        res.json(balance);
+        const user = await User.findById(user_id)
+        const totalPaySum = projects.reduce((acc, item) => acc + item.user_salary_amount.amount, 0)
+        const totalPaidSum = user.paychecks.reduce((acc, item) => acc + item.amount, 0)
+        return res.status(200).json({ balance: totalPaySum - totalPaidSum })
     } catch (err) {
         console.error(err.message);
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 };
+exports.getApprovedProjects = async (req, res) => {
+    try {
+        const { user_id } = req.params
+        const { admin_id } = req.user
+        const projects = await Project.find({
+            admin_id,
+            services_providing: {
+                $elemMatch: {
+                    user_id,
+                    status: 'approved'
+                }
+            }
+        });
+        res.status(200).json(projects);
+    } catch (err) {
+        console.log(err.message)
+        return res.status(500).json({ message: "Serverda xatolik" });
+    }
+}
 exports.getProjectsByUser = async (req, res) => {
     try {
         const { user_id, admin_id } = req.user;
@@ -172,70 +125,59 @@ exports.getProjectsForFinish = async (req, res) => {
         res.status(500).json({ success: false, message: "Serverda xatolik yuz berdi" });
     }
 };
-// exports.getProjectsForStart = async (req, res) => {
-//     try {
-//         const { user_id, admin_id } = req.user;
+exports.getProjectsForStart = async (req, res) => {
+    try {
+        const { user_id, admin_id } = req.user;
 
-//         const projects = await Project.find({
-//             admin_id,
-//             services_providing: {
-//                 $elemMatch: {
-//                     user_id,
-//                     status: 'pending'
-//                 }
-//             }
-//         });
+        const projects = await Project.find({
+            admin_id,
+            services_providing: {
+                $elemMatch: {
+                    user_id,
+                    status: 'pending',
+                    index: 1
+                }
+            }
+        });
 
-//         res.status(200).json({ success: true, projects });
-//     } catch (err) {
-//         console.error(err.message);
-//         res.status(500).json({ success: false, message: "Serverda xatolik yuz berdi" });
-//     }
-// };
+        res.status(200).json({ success: true, projects });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ success: false, message: "Serverda xatolik yuz berdi" });
+    }
+};
+exports.startProject = async (req, res) => {
+    try {
+        const { project_id, service_id } = req.params
+        const { user_id } = req.user;
+        const project = await Project.findById(project_id);
+        if (!project) {
+            return res.status(404).json({ message: "Mashina topilmadi" });
+        }
+        project.services_providing.forEach(service => {
+            if (service.user_id.toString() === user_id.toString() && service._id.toString() === service_id) {
+                service.status = 'inprogress';
+                service.started_time = new Date().toISOString();
+            }
+        });
+        await project.save();
+        res.json({ message: "Mashina servisi jarayonda" });
 
-
-// exports.startProject = async (req, res) => {
-//     try {
-//         const { project_id } = req.params
-//         const { user_id, admin_id } = req.user;
-//         const project = await Project.findOne({
-//             admin_id,
-//             _id: project_id,
-//             services_providing: {
-//                 $elemMatch: {
-//                     user_id,
-//                     status: 'pending'
-//                 }
-//             }
-//         });
-//         if (!project) {
-//             return res.status(404).json({ message: "Mashina topilmadi" });
-//         }
-//         project.services_providing.forEach(service => {
-//             if (service.user_id.toString() === user_id.toString()) {
-//                 service.status = 'inprogress';
-//                 service.started_time = new Date().toISOString();
-//             }
-//         });
-//         await project.save();
-//         res.json({ message: "Mashina servisi boshlandi" });
-
-//     } catch (err) {
-//         console.log(err.message)
-//         return res.status(500).json({ message: "Serverda xatolik" });
-//     }
-// }
+    } catch (err) {
+        console.log(err.message)
+        return res.status(500).json({ message: "Serverda xatolik" });
+    }
+}
 exports.finishService = async (req, res) => {
     try {
-        const { project_id } = req.params
+        const { project_id, service_id } = req.params
         const { user_id, admin_id } = req.user;
         const project = await Project.findOne({
             admin_id,
             _id: project_id,
             services_providing: {
                 $elemMatch: {
-                    user_id,
-                    status: 'inprogress'
+                    user_id
                 }
             }
         });
@@ -243,7 +185,7 @@ exports.finishService = async (req, res) => {
             return res.status(404).json({ message: "Mashina topilmadi" });
         }
         project.services_providing.forEach(service => {
-            if (service.user_id.toString() === user_id.toString()) {
+            if (service.user_id.toString() === user_id.toString() && service._id.toString() === service_id) {
                 service.status = 'finished';
                 service.ended_time = new Date().toISOString();
             }
@@ -258,7 +200,7 @@ exports.finishService = async (req, res) => {
 }
 exports.approveService = async (req, res) => {
     try {
-        const { project_id } = req.params;
+        const { project_id, approving_service, starting_service } = req.query;
         const { user_id } = req.user;
         const project = await Project.findOne({
             _id: project_id,
@@ -269,10 +211,10 @@ exports.approveService = async (req, res) => {
             return res.status(404).json({ message: "Loyiha topilmadi" });
         }
 
+        console.log(starting_service);
 
-        const user_service = project.services_providing.find(service => service.user_id.toString() === user_id.toString());
-        const prev_service = project.services_providing.find(service => service.index === user_service.index - 1);
-        console.log(prev_service);
+        const user_service = project.services_providing.find(service => service._id.toString() === starting_service);
+        const prev_service = project.services_providing.find(service => service._id.toString() === approving_service);
 
         if (!prev_service) {
             return res.status(400).json({ message: "Qabul qilish uchun servis topilmadi" });
@@ -280,6 +222,7 @@ exports.approveService = async (req, res) => {
         if (prev_service.status !== 'finished' && prev_service.status !== 'rejected') {
             return res.status(400).json({ message: "Qabul qilish uchun servisning holati 'tugatilgan' yoki 'rad etilgan' bo'lishi kerak" });
         }
+
         prev_service.status = 'approved';
         prev_service.approved_time = new Date().toISOString();
         const user = await User.findById(prev_service.user_id);
@@ -297,7 +240,7 @@ exports.approveService = async (req, res) => {
 };
 exports.rejectService = async (req, res) => {
     try {
-        const { project_id } = req.params;
+        const { project_id, rejecting_service } = req.query;
         const { user_id } = req.user;
 
         const project = await Project.findOne({
@@ -309,9 +252,8 @@ exports.rejectService = async (req, res) => {
             return res.status(404).json({ message: "Loyiha topilmadi" });
         }
 
-
-        const user_service = project.services_providing.find(service => service.user_id.toString() === user_id.toString());
-        const prev_service = project.services_providing.find(service => service.index === user_service.index - 1);
+        // const user_service = project.services_providing.find(service => service._id.toString() === starting_service);
+        const prev_service = project.services_providing.find(service => service._id.toString() === rejecting_service);
         if (!prev_service) {
             return res.status(400).json({ message: "Rad etish uchun servis topilmadi" });
         }
@@ -320,7 +262,6 @@ exports.rejectService = async (req, res) => {
         }
         prev_service.status = 'rejected';
         prev_service.rejected_time = new Date().toISOString();
-
 
         await project.save();
         res.json({ message: "Loyiha muvaffaqiyatli rad etildi" });
@@ -334,9 +275,12 @@ exports.editUser = async (req, res) => {
     try {
         const { user_id } = req.params;
         const { password } = req.body;
-        const user = await User.findById(user_id);
+        console.log(password);
+
         if (password) {
             req.body.password = await bcrypt.hash(password, 10);
+        } else {
+            delete req.body.password;
         }
         await User.findByIdAndUpdate(user_id, req.body, { new: true });
         res.json({ message: "Foydalanuvchi muvaffaqiyatli tahrirlandi" });
@@ -345,3 +289,49 @@ exports.editUser = async (req, res) => {
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 }
+exports.payUser = async (req, res) => {
+    try {
+        const { user_id } = req.params;
+
+        await User.findByIdAndUpdate(user_id, {
+            $push: {
+                paychecks: {
+                    amount: req.body.amount,
+                    paycheck_date: req.body.paycheck_date
+                }
+            }
+        })
+        res.json({ message: "Maosh berildi" });
+    } catch (err) {
+        console.log(err.message)
+        return res.status(500).json({ message: "Serverda xatolik" });
+    }
+}
+exports.updateSalary = async (req, res) => {
+    try {
+        const { user_id, salary_id } = req.query
+        await User.findOneAndUpdate(
+            { _id: user_id, "paychecks._id": salary_id },
+            { $set: { "paychecks.$": req.body } }
+        );
+        return res.status(200).json({ message: "Maosh tahrirlandi" })
+    } catch (err) {
+        console.log(err.message)
+        return res.status(500).json({ message: "Serverda xatolik" });
+    }
+}
+exports.deleteSalary = async (req, res) => {
+    try {
+        const { user_id, salary_id } = req.query;
+
+        await User.findOneAndUpdate(
+            { _id: user_id },
+            { $pull: { paychecks: { _id: salary_id } } }
+        );
+
+        res.status(200).json({ message: "Maosh o'chirildi" });
+    } catch (error) {
+        console.error("Xatolik:", error);
+        res.status(500).json({ message: "Ichki server xatosi" });
+    }
+};

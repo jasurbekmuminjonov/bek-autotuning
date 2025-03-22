@@ -31,7 +31,7 @@ exports.login = async (req, res) => {
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET)
         res.status(200).json({
-            token, message: 'Avtorizatsiyadan o\'tdingiz', role: admin ? 'admin' : manager ? 'manager' : 'user', name: auth.name
+            token, message: 'Avtorizatsiyadan o\'tdingiz', user_id: auth._id, role: admin ? 'admin' : manager ? 'manager' : 'user', name: auth.name
         })
     } catch (err) {
         console.log(err.message)

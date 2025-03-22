@@ -14,6 +14,7 @@ const Login = () => {
             await localStorage.setItem('access_token', res.token);
             await localStorage.setItem('role', res.role);
             await localStorage.setItem('name', res.name);
+            await localStorage.setItem('user_id', res.user_id);
             window.location.href = '/'
         } catch (err) {
             console.log(err);

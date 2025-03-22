@@ -9,6 +9,7 @@ import Projects from './projects';
 import { IoMdAddCircle } from 'react-icons/io';
 import AddProject from './addProject';
 import Spendings from './spendings';
+import Salary from './salary';
 
 const ManagerLayout = () => {
     const location = useLocation()
@@ -65,6 +66,7 @@ const ManagerLayout = () => {
                     <Route path='/user' element={<Users />} />
                     <Route path='/service' element={<Services />} />
                     <Route path='/addproject' element={<AddProject />} />
+                    <Route path='/salary' element={<Salary />} />
                     <Route path='/expense' element={<Spendings />} />
                     <Route path='/addproject/:id' element={<AddProject />} />
                 </Routes>
