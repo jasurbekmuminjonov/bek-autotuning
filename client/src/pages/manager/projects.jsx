@@ -55,16 +55,16 @@ const Projects = () => {
         { title: "Holat", dataIndex: "status", render: (text) => status[text] },
         { title: "Valyuta", dataIndex: "currency", key: "_id" },
         {
-            title: "Jami xarajat", dataIndex: "total_spending_amount", key: "_id"
+            title: "Jami xarajat", dataIndex: "total_spending_amount", key: "_id", render: (text) => text.toLocaleString()
         },
         {
-            title: "Jami to'lov", dataIndex: "total_amount_to_paid", key: "_id"
+            title: "Jami to'lov", dataIndex: "total_amount_to_paid", key: "_id", render: (text) => text.toLocaleString()
         },
         {
-            title: "Qilingan to'lov", dataIndex: "total_amount_paid", key: "_id"
+            title: "Qilingan to'lov", dataIndex: "total_amount_paid", key: "_id", render: (text) => text.toLocaleString()
         },
         {
-            title: "Qolgan to'lov", dataIndex: "remained_amount_to_paid", key: "_id"
+            title: "Qolgan to'lov", dataIndex: "remained_amount_to_paid", key: "_id", render: (text) => text.toLocaleString()
         },
         {
             title: "Servis",

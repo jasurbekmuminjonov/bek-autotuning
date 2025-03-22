@@ -70,6 +70,7 @@ const AddProject = () => {
                 createProject(formattedData)
             }
             message.success("Mashina saqlandi")
+            navigate("/")
         }
         catch (error) {
             console.error(error);

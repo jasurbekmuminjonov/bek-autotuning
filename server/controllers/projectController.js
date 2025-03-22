@@ -5,7 +5,7 @@ const url = "https://cbu.uz/uz/arkhiv-kursov-valyut/json/";
 const getUsdRate = async () => {
     try {
         const response = await axios.get(url);
-        return Number(response.data[1].Rate);
+        return Number(response.data[0].Rate);
     } catch (error) {
         console.error("USD kursini olishda xatolik:", error);
         throw new Error("USD kursini olishda muammo yuz berdi");
@@ -58,11 +58,11 @@ exports.createProject = async (req, res) => {
             });
         });
 
-        // const firstService = req.body.services_providing.find(service => service.index === 1);
-        // if (firstService) {
-        //     firstService.status = "inprogress";
-        //     firstService.started_time = new Date().toISOString();
-        // }
+        const firstService = req.body.services_providing.find(service => service.index === 1);
+        if (firstService) {
+            firstService.status = "inprogress";
+            firstService.started_time = new Date().toISOString();
+        }
 
         req.body.total_amount_to_paid = Math.round(totalAmountToPaid * 100) / 100;
         req.body.total_spending_amount = Math.round(totalSpendingAmount * 100) / 100;
@@ -161,10 +161,17 @@ exports.createPayment = async (req, res) => {
         const { project_id } = req.params;
         const { amount, currency } = req.body
         const usdRate = await getUsdRate();
+
         const project = await Project.findById(project_id);
         const paymentAmount = project?.currency === "USD"
-            ? (currency === "USD" ? amount : amount * usdRate)
-            : (currency === "UZS" ? amount : amount / usdRate);
+            ? (currency === "USD" ? amount : amount / usdRate)
+            : (currency === "UZS" ? amount : amount * usdRate);
+        console.log(paymentAmount);
+        console.log(usdRate);
+        console.log(amount);
+        console.log(project?.currency);
+        console.log(currency);
+
         if (project) {
             project.payment_log.push({
                 amount: paymentAmount,
