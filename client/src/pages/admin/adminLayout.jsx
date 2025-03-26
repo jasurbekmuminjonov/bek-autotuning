@@ -5,6 +5,8 @@ import TotalAmountPaidChart from '../../components/chart/totalAmountPaidChart';
 import NetProfitChart from '../../components/chart/netProfitChart';
 import income from '../../assets/income.png'
 import outgoing from '../../assets/outgoing.png'
+import { FaDoorOpen } from "react-icons/fa";
+
 const AdminLayout = () => {
     const { data: projects = [] } = useGetProjectsQuery()
     const { data: users = [] } = useGetUsersQuery()
@@ -44,6 +46,12 @@ const AdminLayout = () => {
             <NetProfitChart projects={projects.filter(p => p.currency === "UZS").sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} />
             <b>Mashinalarning sof foydasi(USD)</b>
             <NetProfitChart projects={projects.filter(p => p.currency === "USD").sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} />
+            <button onClick={() => {
+                localStorage.clear();
+                window.location.href = "/"
+            }}>
+                <FaDoorOpen />
+            </button>
         </div>
     );
 };

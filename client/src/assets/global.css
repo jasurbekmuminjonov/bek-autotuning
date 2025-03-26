@@ -841,3 +841,35 @@ body::-webkit-scrollbar {
 .card > img {
   width: 50px;
 }
+.admin_layout > button {
+  width: 100px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: #fff;
+  font-size: 20px;
+  align-self: end;
+}
+.scanqr_container {
+  width: 100%;
+  height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scan_form {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+.scan_form > input {
+  width: 100%;
+  height: 60px;
+  padding-inline: 12px;
+  font-size: 20px;
+  &:focus {
+    border: 1px solid #000;
+  }
+}

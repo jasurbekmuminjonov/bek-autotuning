@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BiSolidCarMechanic } from 'react-icons/bi';
-import { FaChevronLeft, FaChevronRight, FaDollarSign, FaDoorOpen, FaTools, FaUser } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaDollarSign, FaDoorOpen, FaQrcode, FaTools, FaUser, FaUserClock } from 'react-icons/fa';
 import { FaSackDollar } from 'react-icons/fa6';
 import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import Users from './users';
@@ -10,6 +10,7 @@ import { IoMdAddCircle } from 'react-icons/io';
 import AddProject from './addProject';
 import Spendings from './spendings';
 import Salary from './salary';
+import Scanqr from './scanqr';
 
 const ManagerLayout = () => {
     const location = useLocation()
@@ -22,13 +23,9 @@ const ManagerLayout = () => {
                 <div className="links">
                     <Link className={`aside_link ${location.pathname === "/" && "active"}`} to="/">
                         <BiSolidCarMechanic />
-
                         Mashinalar</Link>
                     <Link className={`aside_link ${location.pathname === "/addproject" && "active"}`} to="/addproject">
                         <IoMdAddCircle />
-
-
-
                         Mashina qo'shish</Link>
                     <Link className={`aside_link ${location.pathname === "/user" && "active"}`} to="/user">
                         <FaUser />
@@ -36,7 +33,6 @@ const ManagerLayout = () => {
                         Ishchilar</Link>
                     <Link className={`aside_link ${location.pathname === "/service" && "active"}`} to="/service">
                         <FaTools />
-
                         Servislar</Link>
                     <Link className={`aside_link ${location.pathname === "/salary" && "active"}`} to="/salary">
                         <FaDollarSign />
@@ -44,6 +40,12 @@ const ManagerLayout = () => {
                     <Link className={`aside_link ${location.pathname === "/expense" && "active"}`} to="/expense">
                         <FaSackDollar />
                         Xarajatlar</Link>
+                    <Link className={`aside_link ${location.pathname === "/davomat" && "active"}`} to="/davomat">
+                        <FaUserClock />
+                        Davomat</Link>
+                    <Link className={`aside_link ${location.pathname === "/scan" && "active"}`} to="/scan">
+                        <FaQrcode />
+                        Skaner</Link>
                 </div>
             </aside>
             <main>
@@ -68,6 +70,7 @@ const ManagerLayout = () => {
                     <Route path='/addproject' element={<AddProject />} />
                     <Route path='/salary' element={<Salary />} />
                     <Route path='/expense' element={<Spendings />} />
+                    <Route path='/scan' element={<Scanqr />} />
                     <Route path='/addproject/:id' element={<AddProject />} />
                 </Routes>
             </main>

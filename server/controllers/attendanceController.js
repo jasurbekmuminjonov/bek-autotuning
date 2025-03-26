@@ -13,7 +13,7 @@ exports.recordAttendance = async (req, res) => {
         );
         if (isLeaved) {
             const leaveDiff = moment(date).diff(moment(isLeaved.arrive_time), 'minutes')
-            if (leaveDiff < 30) {
+            if (leaveDiff < 1) {
                 return res.status(400).json({ message: "Ketish vaqti juda erta" });
             }
         } else {
