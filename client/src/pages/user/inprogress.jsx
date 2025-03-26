@@ -2,17 +2,18 @@ import { useEffect, useState } from "react";
 import {
   useFinishServiceMutation,
   useGetProjectsQuery,
+  usePauseServiceMutation,
 } from "../../context/services/project.service";
 import { useGetServiceQuery } from "../../context/services/service.service";
 import moment from "moment";
-import { FaCheck } from "react-icons/fa";
-import { IoMdAlert } from "react-icons/io";
+import { FaCheck, FaPause, FaPlay } from "react-icons/fa";
 import { message } from "antd";
 
 const Inprogress = () => {
   const { data: projects = [] } = useGetProjectsQuery();
   const { data: services = [] } = useGetServiceQuery();
   const [finishProject] = useFinishServiceMutation();
+  const [pauseProject] = usePauseServiceMutation();
   const [selectedServiceId, setSelectedServiceId] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [open, setOpen] = useState(false);
@@ -27,7 +28,7 @@ const Inprogress = () => {
       project.services_providing.some(
         (service) =>
           (service.user_id === userId && service.status === "inprogress") ||
-          service.status === "rejected"
+          service.status === "rejected" || service.status === "paused"
       )
     );
     setUserProjects(filtered);
@@ -52,7 +53,6 @@ const Inprogress = () => {
       {open && (
         <div className="confirm">
           <div className="confirm_title">
-            <IoMdAlert color="#ffbb08" />
             <p>Chindan ham servisni tugatilganini tasdiqlaysizmi?</p>
           </div>
           <div className="confirm_body">
@@ -99,21 +99,20 @@ const Inprogress = () => {
               </div>
             </div>
             <div className="project_services">
-              <p>Faol servislar</p>
+              <b>Faol servislar</b>
               {item.services_providing
                 .filter(
                   (service) =>
                     (service.user_id === userId &&
                       service.status === "inprogress") ||
-                    service.status === "rejected"
+                    service.status === "rejected" || service.status === "paused"
                 )
                 .map((service) => (
                   <div key={service._id} className="service_card">
                     <p>
                       Servis:{" "}
                       {
-                        services.find((s) => s._id === service.service_id)
-                          .service_name
+                        services.find((s) => s._id === service.service_id)?.service_name
                       }
                     </p>
                     <p>
@@ -121,8 +120,8 @@ const Inprogress = () => {
                       {service.status === "inprogress"
                         ? "Jarayonda"
                         : service.status === "rejected"
-                        ? "Rad etilgan"
-                        : "-"}
+                          ? "Rad etilgan"
+                          : "-"}
                     </p>
                     <p>
                       Boshlangan sana:{" "}
@@ -139,13 +138,27 @@ const Inprogress = () => {
                     </p>
                     <div className="service_actions">
                       <button
+                        disabled={service.status === "paused"}
                         onClick={() => {
                           setOpen(true);
                           setSelectedProjectId(item._id);
                           setSelectedServiceId(service._id);
                         }}
                       >
-                        <FaCheck size={64} />
+                        <FaCheck />
+                      </button>
+                      <button onClick={() => pauseProject({
+                        project_id: item._id,
+                        service_id: service._id,
+                      })}>
+                        {
+                          service.status !== "paused" ? (
+                            <FaPause />
+
+                          ) : (
+                            <FaPlay />
+                          )
+                        }
                       </button>
                     </div>
                   </div>

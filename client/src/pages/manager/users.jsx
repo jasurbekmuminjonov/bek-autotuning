@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { FaList, FaPlus } from 'react-icons/fa';
-import { message, Modal, Popover, Table, Tooltip } from 'antd';
+import { FaImage, FaList, FaPlus, FaStarOfLife, FaUpload } from 'react-icons/fa';
+import { Button, message, Modal, Popover, Table, Tooltip, Upload } from 'antd';
 import { MdDeleteForever, MdEdit } from 'react-icons/md';
 import { useGetServiceQuery } from '../../context/services/service.service';
 import moment from 'moment';
@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import { TimePicker } from 'antd';
 import { useCreateUserMutation, useEditUserMutation, useGetUsersQuery, useLazyGetAllUserProjectsQuery, useLazyGetUserProjectsQuery } from '../../context/services/user.service';
 import { useGetProjectsQuery } from '../../context/services/project.service';
+import axios from 'axios';
 
 const Users = () => {
     const { data: users = [] } = useGetUsersQuery()
@@ -19,16 +20,38 @@ const Users = () => {
     const [fetchAllUserProjects, { data: allUserProjects = [] }] = useLazyGetAllUserProjectsQuery();
     const { data: projects = [] } = useGetProjectsQuery();
     const [open, setOpen] = useState(false);
+    const [imageOpen, setImageOpen] = useState(false);
+    const [image, setImage] = useState("")
     const [listUser, setListUser] = useState("");
     const { register, handleSubmit, reset, formState: { errors }, control } = useForm()
     const [visible, setVisible] = useState(false);
     const [editingUser, setEditingUser] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+
+    const handleUpload = async (file) => {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("key", "65384e0beb6c45b817d791e806199b7e");
+
+        try {
+            const response = await axios.post(
+                "https://api.imgbb.com/1/upload",
+                formData
+            );
+            const url = response.data.data.url;
+            setImageUrl(url);
+            message.success("Rasm muvaffaqiyatli yuklandi!");
+        } catch (error) {
+            console.error("Yuklashda xatolik:", error);
+            message.error("Rasmni yuklashda xatolik yuz berdi.");
+        }
+    };
     const columns = [
         { title: "Ism", dataIndex: "name", key: "name" },
         { title: "Login", dataIndex: "login", key: "login" },
         { title: "Ish boshlash vaqti", dataIndex: "start_time", key: "start_time" },
         { title: "Ish tugatish vaqti", dataIndex: "end_time", key: "end_time" },
-        { title: "Balans", dataIndex: "balance", key: "balance" },
+        // { title: "Balans", dataIndex: "balance", key: "balance" },
         {
             title: "Amallar", key: "actions", render: (_, record) => (
                 <div className="table_actions">
@@ -38,6 +61,7 @@ const Users = () => {
                     <button onClick={() => {
                         setVisible(true);
                         setEditingUser(record._id);
+                        setImageUrl(record.image)
                         reset({
                             ...record, password: null, start_time: record.start_time ? dayjs(record.start_time, "HH:mm") : null,
                             end_time: record.end_time ? dayjs(record.end_time, "HH:mm") : null,
@@ -45,9 +69,12 @@ const Users = () => {
                     }}>
                         <MdEdit />
                     </button>
-                    {/* <button>
-                        <MdDeleteForever />
-                    </button> */}
+                    <button onClick={() => {
+                        setImageOpen(true);
+                        setImage(record.image);
+                    }}>
+                        <FaImage />
+                    </button>
                 </div>
             )
         },
@@ -83,6 +110,7 @@ const Users = () => {
                             <FaList />
                         </button>
                     </Popover>
+
                 </div>
             )
         }
@@ -98,16 +126,13 @@ const Users = () => {
 
     async function submitForm(data) {
         try {
-
             data.start_time = typeof data.start_time === "string"
                 ? data.start_time
                 : dayjs(data.start_time).format("HH:mm");
-
+            data.image = imageUrl
             data.end_time = typeof data.end_time === "string"
                 ? data.end_time
                 : dayjs(data.end_time).format("HH:mm");
-
-            console.log(data);
             if (editingUser) {
                 editUser({ body: data, user_id: editingUser })
             } else {
@@ -126,6 +151,12 @@ const Users = () => {
 
     return (
         <div className='manager_page'>
+            <Modal open={imageOpen} title="Ishchining rasmi" footer={[]} onCancel={() => {
+                setImage("")
+                setImageOpen(false);
+            }}>
+                <img style={{ border: "1px solid #000" }} src={image} alt="" />
+            </Modal>
             <Modal open={visible} title={editingUser ? "Ishchini tahrirlash" : "Ishchi qo'shish"} footer={[]} onCancel={() => {
                 setVisible(false);
                 reset({ name: "", login: "", password: "", start_time: "", end_time: "" });
@@ -141,6 +172,25 @@ const Users = () => {
                         placeholder='Ishchi paroli' />
                     {errors.password && <span className='error'>{errors.password.message}</span>}
 
+                    <Upload
+                        customRequest={({ file }) => handleUpload(file)}
+                        showUploadList={false}
+                    >
+                        <Button>
+                            <FaUpload /> Rasmni tanlash
+                        </Button>
+                    </Upload>
+                    {imageUrl && (
+                        <div style={{ width: "25%" }}>
+                            <p>Yuklangan rasm:</p>
+                            <img style={{ width: "100%", objectFit: "contain" }} src={imageUrl} alt="Uploaded" />
+                            <p>
+                                <a href={imageUrl} target="_blank" rel="noopener noreferrer">
+                                    Rasm URL manzili
+                                </a>
+                            </p>
+                        </div>
+                    )}
                     <Controller
                         name="start_time"
                         control={control}
@@ -156,7 +206,6 @@ const Users = () => {
                         )}
                     />
                     {errors.start_time && <span className='error'>{errors.start_time.message}</span>}
-
                     <Controller
                         name="end_time"
                         control={control}
@@ -172,8 +221,6 @@ const Users = () => {
                         )}
                     />
                     {errors.end_time && <span className='error'>{errors.end_time.message}</span>}
-
-
                     <button type="submit">Saqlash</button>
                 </form>
             </Modal>
@@ -187,6 +234,7 @@ const Users = () => {
                         setVisible(true);
                         reset({ name: "", login: "", password: "", start_time: "", end_time: "" });
                         setEditingUser("");
+                        setImageUrl("")
                     }}>
                         <FaPlus />
                         Ishchi qo'shish
@@ -194,7 +242,7 @@ const Users = () => {
                 </div>
             </div>
             <Table dataSource={users} columns={columns} />
-        </div>
+        </div >
     );
 };
 

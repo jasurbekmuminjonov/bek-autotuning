@@ -13,7 +13,6 @@ const Services = () => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm()
     const [open, setOpen] = useState(false);
     const [editingService, setEditingService] = useState("")
-    console.log(editingService);
 
     const columns = [
         { title: "Servis nomi", dataIndex: "service_name", key: "service_name" },
@@ -45,7 +44,6 @@ const Services = () => {
 
     async function submitForm(data) {
         try {
-            console.log(data);
             if (editingService) {
                 updateService({ body: data, service_id: editingService }).unwrap();
             } else {

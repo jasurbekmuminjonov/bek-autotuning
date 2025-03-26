@@ -22,6 +22,7 @@ exports.getProject = async (req, res) => {
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 }
+
 exports.createProject = async (req, res) => {
     try {
         const { admin_id } = req.user;
@@ -58,15 +59,45 @@ exports.createProject = async (req, res) => {
             });
         });
 
-        // const firstService = req.body.services_providing.find(service => service.index === 1);
-        // if (firstService) {
-        //     firstService.status = "inprogress";
-        //     firstService.started_time = new Date().toISOString();
-        // }
+        req.body.services_providing = req.body.services_providing.map(service => {
+            let totalSpendingAmountForService = service.spendings.reduce((acc, spending) => {
+                let spendingAmount = spending.amount.currency === "USD"
+                    ? (currency === "USD" ? spending.amount.amount : spending.amount.amount * usdRate)
+                    : (currency === "UZS" ? spending.amount.amount : spending.amount.amount / usdRate);
+                return acc + spendingAmount;
+            }, 0);
+
+            let serviceAmountToPaid = service.amount_to_paid.currency === "USD"
+                ? (currency === "USD" ? service.amount_to_paid.amount : service.amount_to_paid.amount * usdRate)
+                : (currency === "UZS" ? service.amount_to_paid.amount : service.amount_to_paid.amount / usdRate);
+
+            if (service.salaryType === "percent") {
+                let netProfit = (serviceAmountToPaid - totalSpendingAmountForService) * 0.8;
+                service.user_salary_amount = {
+                    amount: Math.round((currency === "USD" ? netProfit * usdRate : netProfit) * 100) / 100,
+                    currency: "UZS"
+                };
+            } else if (service.salaryType === "salary") {
+                let netProfit = serviceAmountToPaid - totalSpendingAmountForService - service.user_salary_amount.amount;
+                service.net_profit = {
+                    amount: Math.round(netProfit * 100) / 100,
+                    currency: currency
+                };
+            }
+
+            return {
+                ...service,
+                user_salary_amount: service.user_salary_amount,
+                net_profit: service.net_profit || {
+                    amount: Math.round(((totalAmountToPaid - totalSpendingAmount) * 0.2) * 100) / 100,
+                    currency: currency
+                }
+            };
+        });
 
         req.body.total_amount_to_paid = Math.round(totalAmountToPaid * 100) / 100;
         req.body.total_spending_amount = Math.round(totalSpendingAmount * 100) / 100;
-        req.body.remained_amount_to_paid = Math.round(totalAmountToPaid * 100) / 100
+        req.body.remained_amount_to_paid = Math.round(totalAmountToPaid * 100) / 100;
 
         const project = new Project(req.body);
         await project.save();
@@ -77,10 +108,19 @@ exports.createProject = async (req, res) => {
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 };
+
+
+
+
+
 exports.updateProject = async (req, res) => {
     try {
         const { id } = req.params;
         const editingProject = await Project.findById(id);
+        if (!editingProject) {
+            return res.status(404).json({ message: "Loyiha topilmadi" });
+        }
+
         const { currency } = editingProject;
         const usdRate = await getUsdRate();
         let totalAmountToPaid = 0;
@@ -98,6 +138,7 @@ exports.updateProject = async (req, res) => {
                     : payment.amount / usdRate;
             }
         });
+
         req.body.services_providing.forEach(service => {
             if (service.amount_to_paid.currency === "USD") {
                 totalAmountToPaid += currency === "USD"
@@ -124,6 +165,42 @@ exports.updateProject = async (req, res) => {
             });
         });
 
+        req.body.services_providing = req.body.services_providing.map(service => {
+            let totalSpendingAmountForService = service.spendings.reduce((acc, spending) => {
+                let spendingAmount = spending.amount.currency === "USD"
+                    ? (currency === "USD" ? spending.amount.amount : spending.amount.amount * usdRate)
+                    : (currency === "UZS" ? spending.amount.amount : spending.amount.amount / usdRate);
+                return acc + spendingAmount;
+            }, 0);
+
+            let serviceAmountToPaid = service.amount_to_paid.currency === "USD"
+                ? (currency === "USD" ? service.amount_to_paid.amount : service.amount_to_paid.amount * usdRate)
+                : (currency === "UZS" ? service.amount_to_paid.amount : service.amount_to_paid.amount / usdRate);
+
+            if (service.salaryType === "percent") {
+                let netProfit = (serviceAmountToPaid - totalSpendingAmountForService) * 0.8;
+                service.user_salary_amount = {
+                    amount: Math.round((currency === "USD" ? netProfit * usdRate : netProfit) * 100) / 100,
+                    currency: "UZS"
+                };
+            } else if (service.salaryType === "salary") {
+                let netProfit = serviceAmountToPaid - totalSpendingAmountForService - service.user_salary_amount.amount;
+                service.net_profit = {
+                    amount: Math.round(netProfit * 100) / 100,
+                    currency: currency
+                };
+            }
+
+            return {
+                ...service,
+                user_salary_amount: service.user_salary_amount,
+                net_profit: service.net_profit || {
+                    amount: Math.round(((totalAmountToPaid - totalSpendingAmount) * 0.2) * 100) / 100,
+                    currency: currency
+                }
+            };
+        });
+
         const firstService = req.body.services_providing.find(service => service.index === 1);
         if (firstService) {
             firstService.status = "inprogress";
@@ -136,7 +213,7 @@ exports.updateProject = async (req, res) => {
 
         const updatedProject = await Project.findByIdAndUpdate(id, req.body, { new: true });
 
-        res.json({ message: "Loyiha tahrirlandi", project: updatedProject });
+        res.json({ message: "Loyiha muvaffaqiyatli yangilandi", project: updatedProject });
     } catch (err) {
         console.error(err.message);
         return res.status(500).json({ message: "Serverda xatolik" });
@@ -166,11 +243,6 @@ exports.createPayment = async (req, res) => {
         const paymentAmount = project?.currency === "USD"
             ? (currency === "USD" ? amount : amount / usdRate)
             : (currency === "UZS" ? amount : amount * usdRate);
-        console.log(paymentAmount);
-        console.log(usdRate);
-        console.log(amount);
-        console.log(project?.currency);
-        console.log(currency);
 
         if (project) {
             project.payment_log.push({
@@ -194,13 +266,30 @@ exports.createPayment = async (req, res) => {
 exports.finishProject = async (req, res) => {
     try {
         const { project_id } = req.params;
-        await Project.findByIdAndUpdate(project_id, {
-            status: 'finished'
-        }, { new: true });
+
+        let project = await Project.findById(project_id);
+        if (!project) {
+            return res.status(404).json({ message: "Loyiha topilmadi" });
+        }
+
+        project.services_providing = project.services_providing.map(service => {
+            if (service.status !== 'approved') {
+                return {
+                    ...service,
+                    status: 'approved',
+                    approved_time: new Date().toISOString()
+                };
+            }
+            return service;
+        });
+
+        project.status = 'finished';
+        await project.save();
+
         res.json({ message: "Mashina servisi to'liq tugatildi" });
 
     } catch (err) {
-        console.log(err.message)
+        console.log(err.message);
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 }
@@ -263,6 +352,31 @@ exports.getAllProjectByUser = async (req, res) => {
             'services_providing.user_id': user_id
         });
         res.json(projects);
+    } catch (err) {
+        console.log(err.message)
+        return res.status(500).json({ message: "Serverda xatolik" });
+    }
+}
+
+exports.pauseToggle = async (req, res) => {
+    try {
+        const { project_id, service_id } = req.params
+        const project = await Project.findById(project_id);
+        const service = project.services_providing.find(s => s._id.toString() === service_id)
+        const isPaused = service.status === 'paused'
+        if (!isPaused) {
+            service.status = 'paused'
+            service.pause_log.push({
+                start: new Date().toISOString(),
+                end: null
+            })
+        } else {
+            service.status = 'inprogress'
+            service.pause_log.at(-1).end = new Date().toISOString()
+        }
+        await project.save()
+        res.json({ message: "Saqlandi" });
+
     } catch (err) {
         console.log(err.message)
         return res.status(500).json({ message: "Serverda xatolik" });

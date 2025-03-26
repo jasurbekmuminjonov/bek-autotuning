@@ -8,10 +8,10 @@ import {
 import { RiFilterLine } from "react-icons/ri";
 import { BiSearchAlt2 } from "react-icons/bi";
 import { message, Modal, Popconfirm, Popover, Table } from "antd";
-import { FaCheck, FaDollarSign, FaList } from "react-icons/fa";
+import { FaCheck, FaDollarSign, FaImage, FaList, FaMinus } from "react-icons/fa";
 import { useGetServiceQuery } from "../../context/services/service.service";
 import moment from "moment";
-// import { useGetUsersQuery } from "../../context/services/user.service";
+import { useGetUsersQuery } from "../../context/services/user.service";
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +21,9 @@ const Projects = () => {
   const [finishProject, { isLoading: finishLoading }] =
     useFinishProjectMutation();
   const { data: projects = [] } = useGetProjectsQuery();
-  //   const { data: users = [] } = useGetUsersQuery();
+  const [imageModal, setImageModal] = useState(false)
+  const [imageId, setImageId] = useState("")
+  const { data: users = [] } = useGetUsersQuery();
   const { data: services = [] } = useGetServiceQuery();
   const [payProject] = usePayProjectMutation();
   const [open, setOpen] = useState(false);
@@ -38,15 +40,19 @@ const Projects = () => {
         : true;
       const matchesSearchTerm = filters.searchTerm.toLowerCase()
         ? (
-            item.car_name.toLowerCase() +
-            item.car_number.toLowerCase() +
-            item.client_name.toLowerCase() +
-            item.client_phone.toLowerCase()
-          ).includes(filters.searchTerm)
+          item.car_name.toLowerCase() +
+          item.car_number.toLowerCase() +
+          item.car_id.toLowerCase() +
+          item.client_name.toLowerCase() +
+          item.client_phone.toLowerCase()
+        ).includes(filters.searchTerm)
         : true;
       return matchesStatus && matchesSearchTerm;
     });
   }, [projects, filters]);
+
+  console.log(projects);
+  
 
   const handleFilterChange = useCallback((e) => {
     setFilters((prev) => ({ ...prev, status: e.target.value }));
@@ -63,6 +69,7 @@ const Projects = () => {
   const projectsColumns = [
     { title: "Mashina nomi", dataIndex: "car_name", key: "car_name" },
     { title: "Mashina raqami", dataIndex: "car_number", key: "car_number" },
+    { title: "Mashina ID si", dataIndex: "car_id", key: "car_id" },
     { title: "Klent ismi", dataIndex: "client_name", key: "client_name" },
     { title: "Klent raqami", dataIndex: "client_phone", key: "client_phone" },
     {
@@ -74,28 +81,33 @@ const Projects = () => {
     { title: "Holat", dataIndex: "status", render: (text) => status[text] },
     { title: "Valyuta", dataIndex: "currency", key: "_id" },
     {
+      title: "Bepul",
+      dataIndex: "isFree",
+      render: (text) => text ? "Ha" : "Yo'q"
+    },
+    {
       title: "Jami xarajat",
       dataIndex: "total_spending_amount",
       key: "_id",
-      render: (text) => text.toLocaleString(),
+      render: (text) => text?.toLocaleString(),
     },
     {
       title: "Jami to'lov",
       dataIndex: "total_amount_to_paid",
       key: "_id",
-      render: (text) => text.toLocaleString(),
+      render: (text) => text?.toLocaleString(),
     },
     {
       title: "Qilingan to'lov",
       dataIndex: "total_amount_paid",
       key: "_id",
-      render: (text) => text.toLocaleString(),
+      render: (text) => text?.toLocaleString(),
     },
     {
       title: "Qolgan to'lov",
       dataIndex: "remained_amount_to_paid",
       key: "_id",
-      render: (text) => text.toLocaleString(),
+      render: (text) => text?.toLocaleString(),
     },
     {
       title: "Servis",
@@ -119,6 +131,19 @@ const Projects = () => {
       ),
     },
     {
+      title: "Rasmlar",
+      render: (_, record) => (
+        <div className="table_actions">
+          <button onClick={() => {
+            setImageModal(true)
+            setImageId(record._id)
+          }}>
+            <FaImage />
+          </button>
+        </div>
+      )
+    },
+    {
       title: "To'lov",
       render: (_, record) => (
         <div className="table_actions">
@@ -132,7 +157,7 @@ const Projects = () => {
               />
             }
           >
-            <button>
+            <button disabled={record.isFree}>
               <FaList />
             </button>
           </Popover>
@@ -144,6 +169,7 @@ const Projects = () => {
       render: (_, record) => (
         <div className="table_actions">
           <button
+            disabled={record.isFree}
             onClick={() => {
               setPayingProject(record._id);
               setOpen(true);
@@ -167,7 +193,7 @@ const Projects = () => {
                 message.error("Xatolik yuz berdi");
               }
             }}
-            onCancel={() => {}}
+            onCancel={() => { }}
             overlayStyle={{
               maxWidth: "350px",
               height: "auto",
@@ -193,7 +219,7 @@ const Projects = () => {
                 message.error("Xatolik yuz berdi");
               }
             }}
-            onCancel={() => {}}
+            onCancel={() => { }}
             overlayStyle={{
               maxWidth: "350px",
               height: "auto",
@@ -218,16 +244,27 @@ const Projects = () => {
       render: (text) => services.find((s) => s._id === text).service_name,
     },
     {
+      title: "Ishchi",
+      dataIndex: "user_id",
+      key: "user_id",
+      render: (text) => users.find((u) => u._id === text)?.name || <FaMinus />,
+    },
+    {
       title: "Servis narxi",
       dataIndex: "amount_to_paid",
       key: "amount_to_paid",
-      render: (text) => text.amount.toLocaleString() + " " + text.currency,
+      render: (text) => text.amount?.toLocaleString() + " " + text.currency,
+    },
+    {
+      title: "Maosh turi",
+      dataIndex: "salaryType",
+      render: (text) => text === "salary" ? "Maosh" : text === "percent" ? "Foiz" : "Nomalum"
     },
     {
       title: "Maosh",
       dataIndex: "user_salary_amount",
       key: "user_salary_amount",
-      render: (text) => text.amount.toLocaleString() + " " + text.currency,
+      render: (text) => text.amount?.toLocaleString() + " " + text.currency,
     },
     { title: "Holat", dataIndex: "status", render: (text) => status[text] },
     {
@@ -270,7 +307,7 @@ const Projects = () => {
       title: "Xarajat summasi",
       dataIndex: "amount",
       key: "amount",
-      render: (text) => text.amount.toLocaleString() + " " + text.currency,
+      render: (text) => text.amount?.toLocaleString() + " " + text.currency,
     },
     { title: "Xarajat tavsifi", dataIndex: "description", key: "_id" },
   ];
@@ -279,7 +316,7 @@ const Projects = () => {
       title: "To'lov summasi",
       key: "_id",
       render: (_, record) =>
-        record.amount.toLocaleString() + " " + record.currency,
+        record.amount?.toLocaleString() + " " + record.currency,
     },
     {
       title: "Sana",
@@ -290,6 +327,17 @@ const Projects = () => {
   ];
   return (
     <div className="manager_page">
+      <Modal open={imageModal} footer={[]} onCancel={() => {
+        setImageModal(false);
+        setImageId("");
+      }} title="Mashinaning rasmlari">
+        <div className="modal_form">
+          <img src={projects.find((p) => p._id === imageId)?.front_image} alt="" />
+          <img src={projects.find((p) => p._id === imageId)?.back_image} alt="" />
+          <img src={projects.find((p) => p._id === imageId)?.right_image} alt="" />
+          <img src={projects.find((p) => p._id === imageId)?.left_image} alt="" />
+        </div>
+      </Modal>
       <Modal
         title="Mashina uchun to'lov"
         footer={[]}
@@ -348,12 +396,12 @@ const Projects = () => {
             onChange={(e) => {
               setFilters({ ...filters, searchTerm: e.target.value });
             }}
-            placeholder="Mashina raqami, nomi, klent ismi, tel raqami orqali qidirish"
+            placeholder="Mashina raqami, nomi, ID si, klent ismi, tel raqami orqali qidirish"
           />
           <BiSearchAlt2 />
         </div>
       </div>
-      <Table dataSource={filteredProjects} columns={projectsColumns} />
+      <Table size="small" dataSource={filteredProjects} columns={projectsColumns} />
     </div>
   );
 };

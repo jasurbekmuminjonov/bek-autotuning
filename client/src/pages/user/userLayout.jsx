@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import UserMenu from './userMenu';
-import { FaHome } from 'react-icons/fa';
+import { FaCheck, FaCheckDouble, FaDoorOpen, FaHome, FaRegClock, FaUser } from 'react-icons/fa';
 import Inprogress from './inprogress';
 import Pending from './pending';
 import Approve from './approve';
 import Archived from './archived';
+import { TbTool } from 'react-icons/tb';
 
 const UserLayout = () => {
     const name = localStorage.getItem('name') || "User"
@@ -14,52 +15,34 @@ const UserLayout = () => {
 
     return (
         <div className='user_layout'>
-            <header>
-                {
-                    location.pathname !== "/" && <button onClick={() => navigate("/")}><FaHome /> Bosh menyu</button>
-                }
-                <p onClick={() => window.location.href = "/"}>{name}</p>
-                <button onClick={() => {
-                    localStorage.clear();
-                    window.location.reload();
-                }}>
-                    Chiqish
-                </button>
-            </header>
             <main>
                 <Routes>
-                    <Route path="/" element={<UserMenu />} />
-                    <Route path="/inprogress" element={<Inprogress />} />
+                    <Route path="/" element={<Inprogress />} />
                     <Route path="/pending" element={<Pending />} />
                     <Route path="/approve" element={<Approve />} />
                     <Route path="/archived" element={<Archived />} />
                 </Routes>
             </main>
-            {/* <aside>
-                <Link style={location.pathname === "/" ? { border: "1px solid #000" } : {}} to="/">
-                    Bajarilmoqda
+            <div className="navigate">
+                <Link style={location.pathname === "/" ? { color: "#1677ff" } : {}} to="/">
+                    <TbTool />
                 </Link>
-                <Link style={location.pathname === "/pending" ? { border: "1px solid #000" } : {}} to="/pending">
-                    Kutilmoqda
+                <Link style={location.pathname === "/pending" ? { color: "#1677ff" } : {}} to="/pending">
+                    <FaRegClock />
                 </Link>
-                <Link style={location.pathname === "/approve" ? { border: "1px solid #000" } : {}} to="/approve">
-                    Tasdiqlash
+                <Link style={location.pathname === "/approve" ? { color: "#1677ff" } : {}} to="/approve">
+                    <FaCheck />
                 </Link>
-                <Link style={location.pathname === "/archived" ? { border: "1px solid #000" } : {}} to="/archived">
-                    Arxivlangan
+                <Link style={location.pathname === "/archived" ? { color: "#1677ff" } : {}} to="/archived">
+                    <FaCheckDouble />
                 </Link>
-            </aside>
-            <main>
-                <header>
-                    <p>{name}</p>
-                    <button>
-                        Chiqish
-                    </button>
-                </header>
-                <div className="main">
-
-                </div>
-            </main> */}
+                <Link onClick={() => {
+                    localStorage.clear();
+                    window.location.href = "/"
+                }} style={location.pathname === "/user" ? { color: "#1677ff" } : {}} to="/user">
+                    <FaDoorOpen />
+                </Link>
+            </div>
         </div>
     );
 };

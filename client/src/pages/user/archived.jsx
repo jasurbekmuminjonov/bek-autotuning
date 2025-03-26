@@ -43,7 +43,7 @@ const Archived = () => {
                 open && (
                     <div className="confirm">
                         <div className="confirm_title">
-                            <IoMdAlert color='#ffbb08' />
+                            
                             <p>Chindan ham servisni tugatilganini tasdiqlaysizmi?</p>
                         </div>
                         <div className="confirm_body">
@@ -82,7 +82,7 @@ const Archived = () => {
                                 </div>
                             </div>
                             <div className="project_services">
-                                <p>Tasdiqlangan servislar</p>
+                                <b>Tasdiqlangan servislar</b>
                                 {
                                     item.services_providing.filter(service => service.user_id === userId && service.status === "approved").map((service) => (
                                         <div key={service._id} className="service_card">
@@ -93,7 +93,7 @@ const Archived = () => {
                                             <p>Muddat: {moment(service.end_time).format("DD.MM.YYYY")}</p>
                                             {/* <div className="service_actions">
                                                 <button onClick={() => { setOpen(true); setSelectedProjectId(item._id); setSelectedServiceId(service._id) }}>
-                                                    <FaCheck size={64} />
+                                                    <FaCheck  />
                                                 </button>
                                             </div> */}
                                         </div>

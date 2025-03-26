@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;800;900&display=swap);
+@import url(https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;800;900&display=swap);
 
 * {
   margin: 0;
@@ -9,7 +9,7 @@
 body {
   display: flex;
   justify-content: center;
-  font-family: "Roboto", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 :root {
@@ -131,7 +131,8 @@ body::-webkit-scrollbar {
   border-left: 2px solid #fff;
 }
 .manager_layout > main {
-  flex-grow: 1;
+  /* flex-grow: 1; */
+  width: calc(100% - 230px);
   height: 100%;
   background-color: var(--secondary);
   display: flex;
@@ -467,7 +468,8 @@ body::-webkit-scrollbar {
   justify-content: center;
   color: #fff;
 }
-.user_layout {
+
+/* .user_layout {
   width: 100%;
   height: 100%;
   display: flex;
@@ -496,7 +498,6 @@ body::-webkit-scrollbar {
   display: flex;
   padding-inline-start: 5%;
   align-items: center;
-  /* justify-content: center; */
   font-size: 35px;
   font-weight: bold;
   color: #000;
@@ -506,60 +507,6 @@ body::-webkit-scrollbar {
     background-color: #eee;
   }
 }
-/* .user_layout > aside {
-  width: 400px;
-  height: 100%;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  border-right: 1px solid #ccc;
-}
-.user_layout > aside > a {
-  width: 100%;
-  height: 100px;
-  background-color: #eee;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: bold;
-  color: #000;
-  &:active {
-    background-color: #eee;
-  }
-}
-.user_layout > main {
-  height: 100%;
-  width: calc(100% - 400px);
-}
-.user_layout > main > header {
-  width: 100%;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-inline: 20px;
-  border-bottom: 1px solid #ccc;
-}
-.user_layout > main > header > p {
-  font-size: 25px;
-  font-weight: bolder;
-}
-.user_layout > main > header > button {
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  font-weight: bold;
-}
-.main {
-  padding: 20px;
-  width: 100%;
-  height: calc(100% - 60px);
-} */
-
 .user_layout > header {
   width: 100%;
   height: 60px;
@@ -713,4 +660,184 @@ body::-webkit-scrollbar {
   justify-content: center;
   font-size: 20px;
   font-weight: 500;
+} */
+.user_layout {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.user_layout > .navigate {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding-inline: 6px;
+  height: 60px;
+  justify-content: space-between;
+  border-top: 1px solid #a7a5ad;
+}
+.user_layout > .navigate > a {
+  height: 100%;
+  padding: 6px;
+  color: #a7a5ad;
+}
+.user_layout > main {
+  width: 100%;
+  height: calc(100% - 60px);
+  padding-inline: 6px;
+  padding-block: 6px;
+}
+.user_page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.user_page_header {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #a7a5ad;
+}
+.user_page_header > p {
+  font-size: 20px;
+  font-weight: bold;
+}
+.user_projects {
+  width: 100%;
+  flex-grow: 1;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.user_project {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid #ccc;
+  padding-inline: 6px;
+  padding-block: 6px;
+}
+.user_project_title {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: space-between;
+}
+.user_project_title > .title {
+  display: flex;
+  flex-direction: column;
+  width: calc(50% - 6px);
+}
+.project_services {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.service_card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-inline: 6px;
+  padding-block: 6px;
+  border: 1px solid #ccc;
+}
+.service_actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 6px;
+}
+.service_actions > button {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: #fff;
+  &:disabled {
+    background-color: #ccc;
+    color: #fff;
+    cursor: not-allowed;
+  }
+}
+.confirm {
+  position: absolute;
+  top: 25%;
+  left: 0%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  width: 90%;
+  left: 5%;
+  gap: 12px;
+  padding-inline: 6px;
+  padding-block: 6px;
+  box-shadow: 0 0 10px gray;
+}
+.confirm_title {
+  align-items: center;
+  width: 100%;
+  display: flex;
+  gap: 6px;
+  font-size: 18px;
+}
+.confirm_title > p {
+  font-weight: bold;
+}
+.confirm_body {
+  width: 100%;
+  font-style: 18px;
+}
+.confirm_footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.confirm_footer > button {
+  width: 100px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin_layout {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-inline: 6px;
+  align-items: center;
+  padding-block: 6px;
+  text-align: center;
+}
+
+.cards {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #ccc;
+  gap: 6px;
+  width: 250px;
+  height: 150px;
+}
+.card > img {
+  width: 50px;
 }

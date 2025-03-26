@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { FaChevronLeft, FaStarOfLife } from 'react-icons/fa';
+import { FaChevronLeft, FaStarOfLife, FaUpload } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCreateProjectMutation, useEditProjectMutation, useGetProjectsQuery } from '../../context/services/project.service';
 import { useGetServiceQuery } from '../../context/services/service.service';
 import { useGetUsersQuery } from '../../context/services/user.service';
-import { message } from 'antd';
+import { Button, message, Upload } from 'antd';
+import axios from 'axios';
 
 const AddProject = () => {
     const { id } = useParams()
@@ -15,8 +16,13 @@ const AddProject = () => {
     const [createProject] = useCreateProjectMutation()
     const [editProject] = useEditProjectMutation()
     const { data: services = [] } = useGetServiceQuery()
-
-    const { register, handleSubmit, reset, formState: { errors }, control } = useForm()
+    const [frontImage, setFrontImage] = useState("")
+    const [backImage, setBackImage] = useState("")
+    const [rightImage, setRightImage] = useState("")
+    const [leftImage, setLeftImage] = useState("")
+    const { register, handleSubmit, reset, formState: { errors }, control, watch } = useForm()
+    const [salaryType, setSalaryType] = useState("salary")
+    const isFree = watch("isFree", false);
     const { fields, append, remove } = useFieldArray({
         control,
         name: "services_providing",
@@ -35,6 +41,11 @@ const AddProject = () => {
                         end_time: service.end_time ? new Date(service.end_time).toISOString().split('T')[0] : "",
                     })) || []
                 });
+                setSalaryType(project.salaryType)
+                setFrontImage(project.front_image)
+                setBackImage(project.back_image)
+                setRightImage(project.right_image)
+                setLeftImage(project.left_image)
             }
         }
     }, [id, projects, reset]);
@@ -44,6 +55,10 @@ const AddProject = () => {
         try {
             const formattedData = {
                 ...data,
+                front_image: frontImage,
+                back_image: backImage,
+                right_image: rightImage,
+                left_image: leftImage,
                 services_providing: data.services_providing.map(service => ({
                     ...service,
                     amount_to_paid: {
@@ -78,6 +93,26 @@ const AddProject = () => {
         }
     }
 
+    const handleUpload = async (file, setImageUrl) => {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("key", "65384e0beb6c45b817d791e806199b7e");
+
+        try {
+            const response = await axios.post(
+                "https://api.imgbb.com/1/upload",
+                formData
+            );
+            const url = response.data.data.url;
+            setImageUrl(url);
+            message.success("Rasm muvaffaqiyatli yuklandi!");
+        } catch (error) {
+            console.error("Yuklashda xatolik:", error);
+            message.error("Rasmni yuklashda xatolik yuz berdi.");
+        }
+    };
+
+
     return (
         <div className='manager_page'>
             {
@@ -111,7 +146,9 @@ const AddProject = () => {
                                 placeholder='Format: 991112233'
                                 {...register("client_phone", { required: "Klent tel raqamni kiriting", minLength: { value: 9, message: "Talab etiladigan format: 991112233" }, maxLength: { value: 9, message: "Talab etiladigan format: 991112233" } })}
                                 type="number"
-                                onwheel="event.preventDefault();"
+                                onWheel={(e) => {
+                                    e.preventDefault();
+                                }}
                             />
                         </label>
                         <p>Mashina ma'lumotlari</p>
@@ -127,14 +164,125 @@ const AddProject = () => {
                                 <FaStarOfLife size={8} />
                                 Mashina raqami
                             </p>
-                            <input onwheel="event.preventDefault();"  {...register("car_number", { required: "Mashina raqamini kiriting" })} type="text" id="car_number" />
+                            <input onWheel={(e) => {
+                                e.preventDefault();
+                            }}  {...register("car_number", { required: "Mashina raqamini kiriting" })} type="text" id="car_number" />
                         </label>
+                        <label htmlFor="car_id">
+                            <p>
+                                <FaStarOfLife size={8} />
+                                Mashina ID si
+                            </p>
+                            <input onWheel={(e) => {
+                                e.preventDefault();
+                            }}  {...register("car_id", { required: "Mashina ID sini kiriting" })} type="text" id="car_id" />
+                        </label>
+                        <label htmlFor="front_image">
+                            <p>
+                                <FaStarOfLife size={8} />
+                                Mashinaning old rasmi
+                            </p>
+                            <Upload
+                                customRequest={({ file }) => handleUpload(file, setFrontImage)}
+                                showUploadList={false}
+                            >
+                                <Button>
+                                    <FaUpload /> Rasmni tanlash
+                                </Button>
+                            </Upload>
+                        </label>
+                        {frontImage && (
+                            <div style={{ width: "25%" }}>
+                                <p>Yuklangan rasm:</p>
+                                <img style={{ width: "100%", objectFit: "contain" }} src={frontImage} alt="Uploaded" />
+                                <p>
+                                    <a href={frontImage} target="_blank" rel="noopener noreferrer">
+                                        Rasm URL manzili
+                                    </a>
+                                </p>
+                            </div>
+                        )}
+                        <label htmlFor="front_image">
+                            <p>
+                                <FaStarOfLife size={8} />
+                                Mashinaning orqa rasmi
+                            </p>
+                            <Upload
+                                customRequest={({ file }) => handleUpload(file, setBackImage)}
+                                showUploadList={false}
+                            >
+                                <Button>
+                                    <FaUpload /> Rasmni tanlash
+                                </Button>
+                            </Upload>
+                        </label>
+                        {backImage && (
+                            <div style={{ width: "25%" }}>
+                                <p>Yuklangan rasm:</p>
+                                <img style={{ width: "100%", objectFit: "contain" }} src={backImage} alt="Uploaded" />
+                                <p>
+                                    <a href={backImage} target="_blank" rel="noopener noreferrer">
+                                        Rasm URL manzili
+                                    </a>
+                                </p>
+                            </div>
+                        )}
+                        <label htmlFor="front_image">
+                            <p>
+                                <FaStarOfLife size={8} />
+                                Mashinaning o'ng rasmi
+                            </p>
+                            <Upload
+                                customRequest={({ file }) => handleUpload(file, setRightImage)}
+                                showUploadList={false}
+                            >
+                                <Button>
+                                    <FaUpload /> Rasmni tanlash
+                                </Button>
+                            </Upload>
+                        </label>
+                        {rightImage && (
+                            <div style={{ width: "25%" }}>
+                                <p>Yuklangan rasm:</p>
+                                <img style={{ width: "100%", objectFit: "contain" }} src={rightImage} alt="Uploaded" />
+                                <p>
+                                    <a href={rightImage} target="_blank" rel="noopener noreferrer">
+                                        Rasm URL manzili
+                                    </a>
+                                </p>
+                            </div>
+                        )}
+                        <label htmlFor="front_image">
+                            <p>
+                                <FaStarOfLife size={8} />
+                                Mashinaning chap rasmi
+                            </p>
+                            <Upload
+                                customRequest={({ file }) => handleUpload(file, setLeftImage)}
+                                showUploadList={false}
+                            >
+                                <Button>
+                                    <FaUpload /> Rasmni tanlash
+                                </Button>
+                            </Upload>
+                        </label>
+                        {leftImage && (
+                            <div style={{ width: "25%" }}>
+                                <p>Yuklangan rasm:</p>
+                                <img style={{ width: "100%", objectFit: "contain" }} src={leftImage} alt="Uploaded" />
+                                <p>
+                                    <a href={leftImage} target="_blank" rel="noopener noreferrer">
+                                        Rasm URL manzili
+                                    </a>
+                                </p>
+                            </div>
+                        )}
                         <label htmlFor="currency">
                             <p>
                                 <FaStarOfLife size={8} />
                                 Afzal valyuta
                             </p>
-                            <select disabled={id} {...register("currency", { required: "Valyutani tanlang" })} id="currency">
+                            <select disabled={id || isFree} {...register("currency", { required: "Valyutani tanlang" })} id="currency">
                                 <option value="USD">USD</option>
                                 <option value="UZS">UZS</option>
                             </select>
@@ -144,6 +292,10 @@ const AddProject = () => {
                                 <FaStarOfLife size={8} />
                                 Mashinaning chiqib ketish sanasi</p>
                             <input {...register("leave_date", { required: "Chiqib ketish sanasini kiriting" })} type="date" id="leave_date" />
+                        </label>
+                        <label style={{ flexDirection: "row", alignItems: "center", gap: "12px" }} htmlFor="isFree">
+                            <p>Bepul</p>
+                            <input style={{ background: "red", width: "20px" }} type="checkbox" {...register("isFree")} id="isFree" />
                         </label>
 
                     </div>
@@ -161,7 +313,6 @@ const AddProject = () => {
                                         }
                                     </select>
                                 </label>
-
                                 <label>
                                     Ishchi:
                                     <select {...register(`services_providing.${index}.user_id`, { required: "Ishchini tanlang" })}>
@@ -172,39 +323,47 @@ const AddProject = () => {
                                         }
                                     </select>
                                 </label>
-
                                 <label>
                                     Xizmat narxi:
-                                    <input {...register(`services_providing.${index}.amount_to_paid.amount`)} type="number" onwheel="event.preventDefault();" />
-                                    <select {...register(`services_providing.${index}.amount_to_paid.currency`)}>
+                                    <input disabled={isFree} {...register(`services_providing.${index}.amount_to_paid.amount`)} type="number" onWheel={(e) => {
+                                        e.preventDefault();
+                                    }} />
+                                    <select disabled={isFree} {...register(`services_providing.${index}.amount_to_paid.currency`)}>
                                         <option value="UZS">UZS</option>
                                         <option value="USD">USD</option>
                                     </select>
                                 </label>
-
+                                <label htmlFor="salaryType">
+                                    <p>Maosh turi</p>
+                                    <select disabled={isFree} onChange={(e) => {
+                                        setSalaryType(e.target.value);
+                                    }}  {...register(`services_providing.${index}.salaryType`)} id="salaryType">
+                                        <option value="salary">Maosh</option>
+                                        <option value="percent">Foiz</option>
+                                    </select>
+                                </label>
                                 <label>
                                     Ishchining maoshi:
-                                    <input {...register(`services_providing.${index}.user_salary_amount.amount`)} type="number" onwheel="event.preventDefault();" />
+                                    <input disabled={watch("isFree") || watch(`services_providing.${index}.salaryType`) === "percent"} {...register(`services_providing.${index}.user_salary_amount.amount`)} type="number" onWheel={(e) => {
+                                        e.preventDefault();
+                                    }} />
                                 </label>
-
                                 <label>
                                     Boshlash sanasi:
                                     <input {...register(`services_providing.${index}.start_time`)} type="date" />
                                 </label>
-
                                 <label>
                                     Tugash sanasi:
                                     <input {...register(`services_providing.${index}.end_time`)} type="date" />
                                 </label>
-
                                 <h4>Harajatlar</h4>
                                 <SpendingsFieldArray control={control} parentIndex={index} register={register} />
-
                                 <label>
                                     Tartib raqami:
-                                    <input {...register(`services_providing.${index}.index`)} type="number" onwheel="event.preventDefault();" defaultValue={index + 1} />
+                                    <input {...register(`services_providing.${index}.index`)} type="number" onWheel={(e) => {
+                                        e.preventDefault();
+                                    }} defaultValue={index + 1} />
                                 </label>
-
                                 <button type="button" onClick={() => remove(index)}>O‘chirish</button>
                             </div>
                         ))}
@@ -213,8 +372,8 @@ const AddProject = () => {
                             onClick={() =>
                                 append({
                                     user_id: "",
-                                    amount_to_paid: { amount: 0, currency: "UZS" },
-                                    user_salary_amount: { amount: 0, currency: "UZS" },
+                                    amount_to_paid: { amount: null, currency: "UZS" },
+                                    user_salary_amount: { amount: null, currency: "UZS" },
                                     spendings: [],
                                     service_id: "",
                                     start_time: "",
@@ -247,7 +406,9 @@ const SpendingsFieldArray = ({ control, parentIndex, register }) => {
                 <div className='spending' key={item.id}>
                     <label>
                         Harajat miqdori:
-                        <input {...register(`services_providing.${parentIndex}.spendings.${index}.amount.amount`)} type="number" onwheel="event.preventDefault();" />
+                        <input {...register(`services_providing.${parentIndex}.spendings.${index}.amount.amount`)} type="number" onWheel={(e) => {
+                            e.preventDefault();
+                        }} />
                         <select {...register(`services_providing.${parentIndex}.spendings.${index}.amount.currency`)}>
                             <option value="UZS">UZS</option>
                             <option value="USD">USD</option>
@@ -263,7 +424,7 @@ const SpendingsFieldArray = ({ control, parentIndex, register }) => {
                 </div>
             ))}
 
-            <button type="button" onClick={() => append({ amount: { amount: 0, currency: "UZS" }, description: "" })}>Harajat qo‘shish</button>
+            <button type="button" onClick={() => append({ amount: { amount: null, currency: "UZS" }, description: "" })}>Harajat qo‘shish</button>
         </>
     );
 };

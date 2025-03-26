@@ -1,75 +1,123 @@
 const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema({
-    car_name: {  //mashina nomi
+    car_name: {  // mashina nomi
         type: String,
         required: true
     },
-    car_number: { //mashina raqami
+    car_number: { // mashina raqami
         type: String
     },
-    client_phone: { //client tel raqami
+    client_phone: { // client tel raqami
         type: String,
         required: true,
         match: /^\d{9}$/
     },
-    client_name: { //client tel ismi
+    client_name: { // client ismi
         type: String,
         required: true
     },
-    currency: {
+    front_image: {
+        type: String,
+        required: true,
+    },
+    back_image: {
+        type: String,
+        required: true,
+    },
+    left_image: {
+        type: String,
+        required: true,
+    },
+    car_id: {
+        type: String,
+        required: true,
+    },
+    right_image: {
+        type: String,
+        required: true,
+    },
+    isFree: { //to'lov mavjudligi
+        type: Boolean,
+        default: false
+    },
+    currency: { //afzal valyuta
         type: String,
         enum: ['USD', 'UZS'],
         default: 'UZS',
         required: true
     },
-    services_providing: {  //ko'rsatilayotgan xizmatlar
+    services_providing: {  // ko'rsatilayotgan xizmatlar
         type: [
             {
-                user_id: {   //user id si
+                user_id: {   // user id si
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'user',
                     required: true
                 },
-                amount_to_paid: {  //xizmat narxi
-                    type: {
-                        amount: Number,
-                        currency: {
-                            type: String,
-                            enum: ['USD', 'UZS'],
-                            default: 'UZS'
-
-                        }
-                    },
-                    required: true
+                salaryType: {
+                    type: String,
+                    enum: ["percent", "salary"]
                 },
-                user_salary_amount: {  //user uchun beriladigan maosh
+                net_profit: {
                     type: {
-                        amount: Number,
+                        amount: {
+                            type: Number,
+                            default: null
+                        },
                         currency: {
                             type: String,
                             enum: ['USD', 'UZS'],
                             default: 'UZS'
                         }
+                    }
+                },
+                amount_to_paid: {  // xizmat narxi
+                    type: {
+                        amount: {
+                            type: Number,
+                            default: null
+                        },
+                        currency: {
+                            type: String,
+                            enum: ['USD', 'UZS'],
+                            default: 'UZS'
+                        }
+                    },
+                    required: true  
+                },
+                user_salary_amount: {  // user uchun beriladigan maosh
+                    type: {
+                        amount: {
+                            type: Number,
+                            default: null
+                        },
+                        currency: {
+                            type: String,
+                            enum: ['USD', 'UZS'],
+                            default: 'UZS'
+                        }
                     },
                     required: true
                 },
-                spendings: {  //umumiy harajatlar
+                spendings: {  // umumiy harajatlar
                     type: [
                         {
-                            amount: {
+                            amount: {  // harajat miqdori
                                 type: {
-                                    amount: Number,
+                                    amount: {
+                                        type: Number,
+                                        default: null
+                                    },
                                     currency: {
                                         type: String,
                                         enum: ['USD', 'UZS'],
                                         default: 'UZS'
-
                                     }
                                 },
                                 required: true
                             },
-                            description: { //harajat tavsifi
+                            description: { // harajat tavsifi
                                 type: String,
                                 required: true
                             }
@@ -78,41 +126,48 @@ const projectSchema = new mongoose.Schema({
                     default: [],
                     required: true
                 },
-                service_id: {  //xizmat id si
+                service_id: {  // xizmat id si
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'service',
                     required: true
                 },
-                start_time: {  //xizmat deadline boshlash vaqti
+                start_time: {  // xizmat boshlash vaqti
                     type: Date,
                     required: true
                 },
-                end_time: { //xizmat deadline tugash vaqti
+                end_time: { // xizmat tugash vaqti
                     type: Date,
                     required: true
                 },
-                started_time: {  //xizmat boshlangan vaqti
+                started_time: {  // xizmat boshlangan vaqti
                     type: Date,
                     default: null
                 },
-                approved_time: {  //xizmat qabul qilingan vaqti
+                approved_time: {  // xizmat qabul qilingan vaqti
                     type: Date,
                     default: null
                 },
-                rejected_time: {  //xizmat rad etilgan vaqti
+                rejected_time: {  // xizmat rad etilgan vaqti
                     type: Date,
                     default: null
                 },
-                ended_time: { //xizmat tugatilgan vaqti
+                ended_time: { // xizmat tugatilgan vaqti
                     type: Date,
                     default: null
                 },
-                status: { //status - pending:qabul qilish  kutilayapti, inprogress:xizmat bajarilyapti, finished:xizmat tugatildi, approved:tasdiqlandi
+                status: { // status - pending: qabul qilish kutilayapti, inprogress: xizmat bajarilyapti, finished: xizmat tugatildi, approved: tasdiqlandi, rejected: rad etildi
                     type: String,
-                    enum: ['pending', 'inprogress', 'finished', 'approved', 'rejected'],
+                    enum: ['pending', 'inprogress', 'finished', 'approved', 'rejected', 'paused'],
                     default: 'pending'
                 },
-                index: { //nechanchi tartibda qilish
+                pause_log: {
+                    type: [{
+                        start: Date,
+                        end: Date
+                    }],
+                    default: []
+                },
+                index: { // nechanchi tartibda qilish
                     type: Number,
                     default: 1
                 }
@@ -125,47 +180,50 @@ const projectSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    status: { //status - inprogress: qilinayapti, finished: tugatildi
+    status: { // status - inprogress: qilinayapti, finished: tugatildi
         type: String,
         enum: ['inprogress', 'finished'],
         default: 'inprogress'
     },
-    total_amount_to_paid: {
+    total_amount_to_paid: { // umumiy to'lanishi kerak bo'lgan summa
+        type: Number,
+        default: null
+    },
+    total_spending_amount: { // umumiy sarflangan summa
+        type: Number,
+        default: null
+    },
+    remained_amount_to_paid: { // qolgan to'lanishi kerak bo'lgan summa
+        type: Number,
+        default: null
+    },
+    total_amount_paid: { // jami to'langan summa
         type: Number,
         default: 0
     },
-    total_spending_amount: {
-        type: Number,
-        default: 0
-    },
-    remained_amount_to_paid: {
-        type: Number,
-        default: 0
-    },
-    total_amount_paid: {
-        type: Number,
-        default: 0
-    },
-    payment_log: {
-        type: [{
-            amount: {
-                type: Number,
-                required: true
-            },
-            currency: {
-                type: String,
-                enum: ['USD', 'UZS'],
-                default: 'UZS',
-                required: true
-            },
-            paid_date: { //sana
-                type: Date,
-                required: true
+    payment_log: {  // to'lovlar tarixi
+        type: [
+            {
+                amount: {  // to'langan summa
+                    type: Number,
+                    default: null,
+                    required: true
+                },
+                currency: {  // valyuta turi
+                    type: String,
+                    enum: ['USD', 'UZS'],
+                    default: 'UZS',
+                    required: true
+                },
+                paid_date: { // to'lov qilingan sana
+                    type: Date,
+                    required: true
+                }
             }
-        }],
+        ],
         default: []
     },
-    admin_id: {
+    admin_id: { // admin ID
         type: mongoose.Schema.Types.ObjectId,
         ref: 'admin',
         required: true

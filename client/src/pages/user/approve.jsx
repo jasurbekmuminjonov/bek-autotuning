@@ -60,7 +60,7 @@ const Approve = () => {
                 open && (
                     <div className="confirm">
                         <div className="confirm_title">
-                            <IoMdAlert color='#ffbb08' />
+                            
                             <p>Chindan ham servisni qabul qilasizmi?</p>
                         </div>
                         <div className="confirm_body">
@@ -77,7 +77,7 @@ const Approve = () => {
                 rejectOpen && (
                     <div className="confirm">
                         <div className="confirm_title">
-                            <IoMdAlert color='#ffbb08' />
+                            
                             <p>Chindan ham servisni rad etasizmi?</p>
                         </div>
                         <div className="confirm_body">
@@ -116,7 +116,7 @@ const Approve = () => {
                                 </div>
                             </div>
                             <div className="project_services">
-                                <p>Qabul qilish uchun servislar</p>
+                                <b>Qabul qilish uchun servislar</b>
                                 {
                                     item.services_providing.filter(service => service.status === "finished").map((service) => (
                                         <div key={service._id} className="service_card">
@@ -126,10 +126,10 @@ const Approve = () => {
                                             <p>Tugatilgan sana: {moment(service.ended_time).format("DD.MM.YYYY HH:mm")}</p>
                                             <div className="service_actions">
                                                 <button onClick={() => { setOpen(true); setStartingProjectId(item.services_providing.find(s => s.index === service.index + 1)._id); setSelectedProjectId(item._id); setSelectedServiceId(service._id) }}>
-                                                    <FaCheck size={64} />
+                                                    <FaCheck  />
                                                 </button>
                                                 <button style={{ background: "#bd282b" }} onClick={() => { setRejectOpen(true); setSelectedProjectId(item._id); setSelectedServiceId(service._id) }}>
-                                                    <FaX size={64} />
+                                                    <FaX  />
                                                 </button>
                                             </div>
                                         </div>

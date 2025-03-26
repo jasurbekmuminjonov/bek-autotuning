@@ -30,7 +30,7 @@ const Pending = () => {
         try {
             startProject({ project_id: selectedProjectId, service_id: selectedServiceId })
             setOpen(false)
-            message.success("Servis tugatildi")
+            message.success("Servis boshlandi")
         } catch (err) {
             console.log(err)
             message.error("Xatolik yuz berdi")
@@ -43,7 +43,7 @@ const Pending = () => {
                 open && (
                     <div className="confirm">
                         <div className="confirm_title">
-                            <IoMdAlert color='#ffbb08' />
+                            
                             <p>Chindan ham servisni tugatilganini tasdiqlaysizmi?</p>
                         </div>
                         <div className="confirm_body">
@@ -82,7 +82,7 @@ const Pending = () => {
                                 </div>
                             </div>
                             <div className="project_services">
-                                <p>Boshlash uchun servislar</p>
+                                <b>Boshlash uchun servislar</b>
                                 {
                                     item.services_providing.filter(service => service.user_id === userId && service.status === "pending" && service.index === 1).map((service) => (
                                         <div key={service._id} className="service_card">
@@ -90,7 +90,7 @@ const Pending = () => {
                                             <p>Muddat: {moment(service.end_time).format("DD.MM.YYYY")}</p>
                                             <div className="service_actions">
                                                 <button onClick={() => { setOpen(true); setSelectedProjectId(item._id); setSelectedServiceId(service._id) }}>
-                                                    <FaPlay size={64} />
+                                                    <FaPlay />
                                                 </button>
                                             </div>
                                         </div>

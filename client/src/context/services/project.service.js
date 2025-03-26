@@ -68,6 +68,14 @@ export const projectApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Project"],
     }),
+    pauseService: builder.mutation({
+      query: ({ project_id, service_id }) => ({
+        url: `/project/service/pause/${project_id}/${service_id}`,
+        method: "PUT",
+        body: {},
+      }),
+      invalidatesTags: ["Project"],
+    }),
     approveProject: builder.mutation({
       query: ({ project_id, approving_service, starting_service }) => ({
         url: `/project/service/approve?project_id=${project_id}&approving_service=${approving_service}&starting_service=${starting_service}`,
@@ -99,4 +107,5 @@ export const {
   useStartProjectMutation,
   useRejectProjectMutation,
   useFinishServiceMutation,
+  usePauseServiceMutation
 } = projectApi;

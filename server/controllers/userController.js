@@ -49,25 +49,6 @@ exports.getBalance = async (req, res) => {
     return res.status(500).json({ message: "Serverda xatolik" });
   }
 };
-// exports.getApprovedProjects = async (req, res) => {
-//     try {
-//         const { user_id } = req.params
-//         const { admin_id } = req.user
-//         const projects = await Project.find({
-//             admin_id,
-//             services_providing: {
-//                 $elemMatch: {
-//                     user_id,
-//                     status: 'approved'
-//                 }
-//             }
-//         });
-//         res.status(200).json(projects);
-//     } catch (err) {
-//         console.log(err.message)
-//         return res.status(500).json({ message: "Serverda xatolik" });
-//     }
-// }
 
 exports.getApprovedProjects = async (req, res) => {
   try {
@@ -260,7 +241,6 @@ exports.approveService = async (req, res) => {
       return res.status(404).json({ message: "Loyiha topilmadi" });
     }
 
-    console.log(starting_service);
 
     const user_service = project.services_providing.find(
       (service) => service._id.toString() === starting_service
@@ -351,7 +331,6 @@ exports.editUser = async (req, res) => {
   try {
     const { user_id } = req.params;
     const { password } = req.body;
-    console.log(password);
 
     if (password) {
       req.body.password = await bcrypt.hash(password, 10);
