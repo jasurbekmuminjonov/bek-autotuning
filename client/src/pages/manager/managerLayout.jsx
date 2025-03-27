@@ -11,6 +11,7 @@ import AddProject from './addProject';
 import Spendings from './spendings';
 import Salary from './salary';
 import Scanqr from './scanqr';
+import Davomat from './davomat';
 
 const ManagerLayout = () => {
     const location = useLocation()
@@ -71,6 +72,7 @@ const ManagerLayout = () => {
                     <Route path='/salary' element={<Salary />} />
                     <Route path='/expense' element={<Spendings />} />
                     <Route path='/scan' element={<Scanqr />} />
+                    <Route path='/davomat' element={<Davomat />} />
                     <Route path='/addproject/:id' element={<AddProject />} />
                 </Routes>
             </main>

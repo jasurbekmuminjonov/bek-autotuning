@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 exports.recordAttendance = async (req, res) => {
     try {
         const { user_id, date } = req.body;
+        console.log(date);
         const user = await User.findById(user_id);
         const userArriveTime = moment(user.start_time, "HH:mm");
         const userLeaveTime = moment(user.end_time)
@@ -16,6 +17,7 @@ exports.recordAttendance = async (req, res) => {
             if (leaveDiff < 1) {
                 return res.status(400).json({ message: "Ketish vaqti juda erta" });
             }
+            isLeaved.leave_time = date;
         } else {
             user.attendance.push({
                 arrive_time: date,

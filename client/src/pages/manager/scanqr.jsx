@@ -4,6 +4,8 @@ import { useCreateDavomatMutation } from '../../context/services/davomat.service
 import successImg from '../../assets/success.png'
 import failImg from '../../assets/fail.png'
 import { Modal } from "antd";
+import moment from "moment-timezone"
+
 
 const Scanqr = () => {
     const [createDavomat] = useCreateDavomatMutation()
@@ -26,7 +28,7 @@ const Scanqr = () => {
                 const userId = e.target[0].value;
 
                 try {
-                    await createDavomat({ user_id: userId, date: new Date().toISOString() }).unwrap();
+                    await createDavomat({ user_id: userId, date: moment().tz("Asia/Tashkent").format() }).unwrap();
                     setSuccess(true);
                     e.target[0].value = "";
 
