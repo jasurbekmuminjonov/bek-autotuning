@@ -225,7 +225,7 @@ const Salary = () => {
           setOpen(false);
         }}
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="modal_form">
+        <form autoComplete='off' onSubmit={handleSubmit(onSubmit)} className="modal_form">
           <label htmlFor="amount">
             <p>Maosh summasi(UZS)</p>
             <input

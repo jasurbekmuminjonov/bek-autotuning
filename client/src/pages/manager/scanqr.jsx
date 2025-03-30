@@ -23,7 +23,7 @@ const Scanqr = () => {
                 <img src={failImg} alt="" />
                 <p style={{ textAlign: "center", fontSize: "25px" }}>{errorText}</p>
             </Modal>
-            <form onSubmit={async (e) => {
+            <form autoComplete='off' onSubmit={async (e) => {
                 e.preventDefault();
                 const userId = e.target[0].value;
 

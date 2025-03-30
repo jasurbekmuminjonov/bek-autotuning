@@ -3,11 +3,10 @@ import { useApproveProjectMutation, useFinishProjectMutation, useGetProjectsForA
 import { useGetServiceQuery } from '../../context/services/service.service';
 import moment from 'moment';
 import { FaCheck } from 'react-icons/fa';
-import { IoMdAlert } from 'react-icons/io';
 import { message } from 'antd';
 import { useGetUsersQuery } from '../../context/services/user.service';
 import { FaX } from 'react-icons/fa6';
-
+import emptyImg from '../../assets/empty.png';
 const Approve = () => {
     const { data: projects = [] } = useGetProjectsForApproveQuery()
     const { data: users = [] } = useGetUsersQuery()
@@ -54,13 +53,29 @@ const Approve = () => {
         }
     }
 
+    console.log(userProjects);
+
+    if (userProjects.length < 1) {
+        return (
+            <div className="user_page">
+                <div className="user_page_header">
+                    <p>Servisni tasdiqlash</p>
+                </div>
+                <div className="user_projects">
+                    <img src={emptyImg} alt="" />
+                    <p>Servislar yo'q</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className='user_page'>
             {
                 open && (
                     <div className="confirm">
                         <div className="confirm_title">
-                            
+
                             <p>Chindan ham servisni qabul qilasizmi?</p>
                         </div>
                         <div className="confirm_body">
@@ -77,11 +92,11 @@ const Approve = () => {
                 rejectOpen && (
                     <div className="confirm">
                         <div className="confirm_title">
-                            
+
                             <p>Chindan ham servisni rad etasizmi?</p>
                         </div>
                         <div className="confirm_body">
-                            <p>Ushbu holatda ushbu servis holati 'rad etilgan' deb belgilanadi va servis ishchisining 'Jarayondagi servislar' bo'limiga qo'shiladi</p>
+                            <p>Ushbu holatda ushbu servis holati 'rad etilgan' deb belgilanadi va servis ishchisining 'jarayondagi servislar' bo'limiga qo'shiladi</p>
                         </div>
                         <div className="confirm_footer">
                             <button onClick={() => setRejectOpen(false)} style={{ background: "#1677ff", color: "#fff" }}>Orqaga</button>
@@ -126,10 +141,10 @@ const Approve = () => {
                                             <p>Tugatilgan sana: {moment(service.ended_time).format("DD.MM.YYYY HH:mm")}</p>
                                             <div className="service_actions">
                                                 <button onClick={() => { setOpen(true); setStartingProjectId(item.services_providing.find(s => s.index === service.index + 1)._id); setSelectedProjectId(item._id); setSelectedServiceId(service._id) }}>
-                                                    <FaCheck  />
+                                                    <FaCheck />
                                                 </button>
                                                 <button style={{ background: "#bd282b" }} onClick={() => { setRejectOpen(true); setSelectedProjectId(item._id); setSelectedServiceId(service._id) }}>
-                                                    <FaX  />
+                                                    <FaX />
                                                 </button>
                                             </div>
                                         </div>

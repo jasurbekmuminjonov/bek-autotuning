@@ -165,7 +165,7 @@ const Users = () => {
                 setVisible(false);
                 reset({ name: "", login: "", password: "", start_time: "", end_time: "" });
             }}>
-                <form onSubmit={handleSubmit(submitForm)} className="modal_form">
+                <form autoComplete='off' onSubmit={handleSubmit(submitForm)} className="modal_form">
                     <input type="text" {...register("name", { required: "Ismni kiriting" })} placeholder='Ishchi ismi' />
                     {errors.name && <span className='error'>{errors.name.message}</span>}
 

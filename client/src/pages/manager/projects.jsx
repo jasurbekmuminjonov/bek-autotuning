@@ -374,6 +374,7 @@ const Projects = () => {
         open={open}
       >
         <form
+        autoComplete='off'
           onSubmit={async (e) => {
             e.preventDefault();
             const amount = Number(e.target.amount.value);

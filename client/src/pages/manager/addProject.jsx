@@ -123,7 +123,7 @@ const AddProject = () => {
                 <div className="manager_page_header_actions">
                 </div>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="addproject_form">
+            <form autoComplete='off' onSubmit={handleSubmit(onSubmit)} className="addproject_form">
                 <div className="forms">
                     <div className="form_part">
                         <p>Klent ma'lumotlari</p>

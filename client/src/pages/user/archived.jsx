@@ -5,6 +5,7 @@ import moment from 'moment';
 import { FaCheck } from 'react-icons/fa';
 import { IoMdAlert } from 'react-icons/io';
 import { message } from 'antd';
+import emptyImg from '../../assets/empty.png';
 
 const Archived = () => {
     const { data: projects = [] } = useGetProjectsQuery()
@@ -37,6 +38,20 @@ const Archived = () => {
         }
     }
 
+        if (userProjects.length < 1) {
+            return (
+                <div className="user_page">
+                    <div className="user_page_header">
+                        <p>Tasdiqlangan servislar</p>
+                    </div>
+                    <div className="user_projects">
+                        <img src={emptyImg} alt="" />
+                        <p>Servislar yo'q</p>
+                    </div>
+                </div>
+            )
+        }
+
     return (
         <div className='user_page'>
             {
@@ -57,7 +72,7 @@ const Archived = () => {
                 )
             }
             <div className="user_page_header">
-                <p>Tasdiqlangan mashinalar</p>
+                <p>Tasdiqlangan servislar</p>
             </div>
             <div className="user_projects">
                 {

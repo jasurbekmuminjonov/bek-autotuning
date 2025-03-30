@@ -5,6 +5,7 @@ import moment from 'moment';
 import { FaCheck, FaPlay } from 'react-icons/fa';
 import { IoMdAlert } from 'react-icons/io';
 import { message } from 'antd';
+import emptyImg from '../../assets/empty.png';
 
 const Pending = () => {
     const { data: projects = [] } = useGetProjectsQuery()
@@ -37,6 +38,20 @@ const Pending = () => {
         }
     }
 
+        if (userProjects.length < 1) {
+            return (
+                <div className="user_page">
+                    <div className="user_page_header">
+                        <p>Boshlanmagan servislar</p>
+                    </div>
+                    <div className="user_projects">
+                        <img src={emptyImg} alt="" />
+                        <p>Servislar yo'q</p>
+                    </div>
+                </div>
+            )
+        }
+
     return (
         <div className='user_page'>
             {
@@ -47,7 +62,7 @@ const Pending = () => {
                             <p>Chindan ham servisni tugatilganini tasdiqlaysizmi?</p>
                         </div>
                         <div className="confirm_body">
-                            <p>Ushbu holatda servis 'qilinayotgan mashinalar' bo'limiga o'tadi va uni o'sha yerdan tugallanganini belgilashingiz mumkin</p>
+                            <p>Ushbu holatda servis 'qilinayotgan servislar' bo'limiga o'tadi va uni o'sha yerdan tugallanganini belgilashingiz mumkin</p>
                         </div>
                         <div className="confirm_footer">
                             <button onClick={() => setOpen(false)} style={{ background: "#1677ff", color: "#fff" }}>Orqaga</button>
@@ -57,7 +72,7 @@ const Pending = () => {
                 )
             }
             <div className="user_page_header">
-                <p>Boshlanmagan mashinalar</p>
+                <p>Boshlanmagan servislar</p>
             </div>
             <div className="user_projects">
                 {

@@ -8,6 +8,7 @@ import { useGetServiceQuery } from "../../context/services/service.service";
 import moment from "moment";
 import { FaCheck, FaPause, FaPlay } from "react-icons/fa";
 import { message } from "antd";
+import emptyImg from '../../assets/empty.png';
 
 const Inprogress = () => {
   const { data: projects = [] } = useGetProjectsQuery();
@@ -48,6 +49,20 @@ const Inprogress = () => {
     }
   };
 
+      if (userProjects.length < 1) {
+          return (
+              <div className="user_page">
+                  <div className="user_page_header">
+                      <p>Jarayondagi servislar</p>
+                  </div>
+                  <div className="user_projects">
+                      <img src={emptyImg} alt="" />
+                      <p>Servislar yo'q</p>
+                  </div>
+              </div>
+          )
+      }
+
   return (
     <div className="user_page">
       {open && (
@@ -75,7 +90,7 @@ const Inprogress = () => {
         </div>
       )}
       <div className="user_page_header">
-        <p>Jarayondagi mashinalar</p>
+        <p>Jarayondagi servislar</p>
       </div>
       <div className="user_projects">
         {userProjects?.map((item) => (

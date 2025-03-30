@@ -74,7 +74,7 @@ const Spendings = () => {
                     }
                 ]} />
             </div>
-            <form className="spendings_form" onSubmit={handleSubmit(onSubmit)}>
+            <form autoComplete='off' className="spendings_form" onSubmit={handleSubmit(onSubmit)}>
                 <label htmlFor="amount">
                     <p>Xarajat summasi</p>
                     <input type="number" {...register("amount", { required: "Summani kiriting" })} id="amount" />

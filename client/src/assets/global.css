@@ -218,6 +218,19 @@ body::-webkit-scrollbar {
   gap: 12px;
   padding: 6px;
 }
+.user_projects > img {
+  max-width: 50%;
+  display: flex;
+  align-self: center;
+  justify-self: center;
+}
+.user_projects > p {
+  display: flex;
+  align-self: center;
+  justify-self: center;
+  color: #eaeaea;
+  font-size: 25px;
+}
 .project_card {
   width: 100%;
   border: 1px solid #ccc;
