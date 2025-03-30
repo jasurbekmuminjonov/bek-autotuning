@@ -147,7 +147,7 @@ const Inprogress = () => {
                       >
                         <FaCheck />
                       </button>
-                      <button onClick={() => pauseProject({
+                      {/* <button onClick={() => pauseProject({
                         project_id: item._id,
                         service_id: service._id,
                       })}>
@@ -159,7 +159,7 @@ const Inprogress = () => {
                             <FaPlay />
                           )
                         }
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 ))}

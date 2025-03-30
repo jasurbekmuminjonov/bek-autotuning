@@ -48,6 +48,10 @@ const Users = () => {
     };
     const columns = [
         { title: "Ism", dataIndex: "name", key: "name" },
+        { title: "Familiya", dataIndex: "last_name", key: "last_name" },
+        { title: "Otasining ismi", dataIndex: "middle_name", key: "middle_name" },
+        { title: "Tel raqam", dataIndex: "first_phone", key: "first_phone" },
+        { title: "Uy tel raqami", dataIndex: "second_phone", key: "second_phone" },
         { title: "Login", dataIndex: "login", key: "login" },
         { title: "Ish boshlash vaqti", dataIndex: "start_time", key: "start_time" },
         { title: "Ish tugatish vaqti", dataIndex: "end_time", key: "end_time" },
@@ -164,6 +168,18 @@ const Users = () => {
                 <form onSubmit={handleSubmit(submitForm)} className="modal_form">
                     <input type="text" {...register("name", { required: "Ismni kiriting" })} placeholder='Ishchi ismi' />
                     {errors.name && <span className='error'>{errors.name.message}</span>}
+
+                    <input type="text" {...register("last_name", { required: "Familiyani kiriting" })} placeholder='Ishchi familiyasi' />
+                    {errors.last_name && <span className='error'>{errors.last_name.message}</span>}
+
+                    <input type="text" {...register("middle_name", { required: "Otasining ismi kiriting" })} placeholder='Ishchi otasi ismi' />
+                    {errors.middle_name && <span className='error'>{errors.middle_name.message}</span>}
+
+                    <input type="text" {...register("first_phone", { required: "Tel raqam kiriting" })} placeholder='Ishchi tel raqami' />
+                    {errors.first_phone && <span className='error'>{errors.first_phone.message}</span>}
+
+                    <input type="text" {...register("second_phone", { required: "Uy tel raqam kiriting" })} placeholder='Ishchi uy tel raqami' />
+                    {errors.second_phone && <span className='error'>{errors.second_phone.message}</span>}
 
                     <input type="text" {...register("login", { required: "Login kiriting" })} placeholder='Ishchi logini' />
                     {errors.login && <span className='error'>{errors.login.message}</span>}

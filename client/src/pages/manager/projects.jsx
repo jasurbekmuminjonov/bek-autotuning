@@ -3,12 +3,13 @@ import {
   useDeleteProjectMutation,
   useFinishProjectMutation,
   useGetProjectsQuery,
+  usePauseServiceMutation,
   usePayProjectMutation,
 } from "../../context/services/project.service";
 import { RiFilterLine } from "react-icons/ri";
 import { BiSearchAlt2 } from "react-icons/bi";
 import { message, Modal, Popconfirm, Popover, Table } from "antd";
-import { FaCheck, FaDollarSign, FaImage, FaList, FaMinus } from "react-icons/fa";
+import { FaCheck, FaDollarSign, FaImage, FaList, FaMinus, FaPause, FaPlay } from "react-icons/fa";
 import { useGetServiceQuery } from "../../context/services/service.service";
 import moment from "moment";
 import { useGetUsersQuery } from "../../context/services/user.service";
@@ -21,6 +22,7 @@ const Projects = () => {
   const [finishProject, { isLoading: finishLoading }] =
     useFinishProjectMutation();
   const { data: projects = [] } = useGetProjectsQuery();
+  const [pauseProject] = usePauseServiceMutation();
   const [imageModal, setImageModal] = useState(false)
   const [imageId, setImageId] = useState("")
   const { data: users = [] } = useGetUsersQuery();
@@ -51,8 +53,7 @@ const Projects = () => {
     });
   }, [projects, filters]);
 
-  console.log(projects);
-  
+
 
   const handleFilterChange = useCallback((e) => {
     setFilters((prev) => ({ ...prev, status: e.target.value }));
@@ -300,6 +301,29 @@ const Projects = () => {
         </div>
       ),
     },
+    {
+      title: "Pauza",
+      render: (_, record) => (
+        <div className="table_actions">
+          <button
+            disabled={filteredProjects.find(project =>
+              project.services_providing.some(service => service._id === record._id)).status === "finished"}
+            onClick={() => {
+              const project = filteredProjects.find(project =>
+                project.services_providing.some(service => service._id === record._id)
+              );
+              pauseProject({
+                project_id: project ? project._id : null,
+                service_id: record._id,
+              });
+            }}
+          >
+            {record.status !== "paused" ? <FaPause /> : <FaPlay />}
+          </button>
+
+        </div >
+      )
+    }
   ];
 
   const spendingsTooltipColumns = [
@@ -325,17 +349,19 @@ const Projects = () => {
       render: (text) => moment(text).format("DD.MM.YYYY"),
     },
   ];
+  console.log(filteredProjects);
+
   return (
     <div className="manager_page">
-      <Modal open={imageModal} footer={[]} onCancel={() => {
+      <Modal width={700} height={300} open={imageModal} footer={[]} onCancel={() => {
         setImageModal(false);
         setImageId("");
       }} title="Mashinaning rasmlari">
-        <div className="modal_form">
-          <img src={projects.find((p) => p._id === imageId)?.front_image} alt="" />
-          <img src={projects.find((p) => p._id === imageId)?.back_image} alt="" />
-          <img src={projects.find((p) => p._id === imageId)?.right_image} alt="" />
-          <img src={projects.find((p) => p._id === imageId)?.left_image} alt="" />
+        <div className="modal_form" style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <img style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain", padding: "6px" }} src={projects.find((p) => p._id === imageId)?.front_image} alt="" />
+          <img style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain", padding: "6px" }} src={projects.find((p) => p._id === imageId)?.back_image} alt="" />
+          <img style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain", padding: "6px" }} src={projects.find((p) => p._id === imageId)?.right_image} alt="" />
+          <img style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain", padding: "6px" }} src={projects.find((p) => p._id === imageId)?.left_image} alt="" />
         </div>
       </Modal>
       <Modal

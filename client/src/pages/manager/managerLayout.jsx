@@ -49,7 +49,7 @@ const ManagerLayout = () => {
                         Skaner</Link>
                 </div>
             </aside>
-            <main>
+            <main style={collapsed ? { width: "100%" } : { width: "calc(100% - 230px)" }}>
                 <header>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <button style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "40px", height: "40px", border: "1px solid #ccc" }} onClick={() => setCollapsed(!collapsed)}>

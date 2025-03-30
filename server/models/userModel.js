@@ -5,6 +5,22 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    last_name: {
+        type: String,
+        required: true
+    },
+    middle_name: {
+        type: String,
+        required: true
+    },
+    first_phone: {
+        type: String,
+        required: true
+    },
+    second_phone: {
+        type: String,
+        required: true
+    },
     login: {
         type: String,
         required: true,

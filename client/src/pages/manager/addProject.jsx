@@ -118,7 +118,6 @@ const AddProject = () => {
             {
                 id && <button onClick={() => navigate(-1)}><FaChevronLeft /></button>
             }
-
             <div className="manager_page_header">
                 <p>{id ? "Mashinani tahrirlash" : "Yangi mashina qo'shish"}</p>
                 <div className="manager_page_header_actions">
@@ -126,7 +125,6 @@ const AddProject = () => {
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="addproject_form">
                 <div className="forms">
-
                     <div className="form_part">
                         <p>Klent ma'lumotlari</p>
                         <label htmlFor="client_name">
@@ -177,6 +175,30 @@ const AddProject = () => {
                                 e.preventDefault();
                             }}  {...register("car_id", { required: "Mashina ID sini kiriting" })} type="text" id="car_id" />
                         </label>
+
+                        <label htmlFor="currency">
+                            <p>
+                                <FaStarOfLife size={8} />
+                                Afzal valyuta
+                            </p>
+                            <select disabled={id || isFree} {...register("currency", { required: "Valyutani tanlang" })} id="currency">
+                                <option value="USD">USD</option>
+                                <option value="UZS">UZS</option>
+                            </select>
+                        </label>
+                        <label htmlFor="leave_date">
+                            <p style={{fontSize:"14px"}}>
+                                <FaStarOfLife size={8} />
+                                Mashinaning chiqib ketish sanasi</p>
+                            <input {...register("leave_date", { required: "Chiqib ketish sanasini kiriting" })} type="date" id="leave_date" />
+                        </label>
+                        <label style={{ flexDirection: "row", alignItems: "center", gap: "12px" }} htmlFor="isFree">
+                            <p>Bepul</p>
+                            <input style={{ background: "red", width: "20px" }} type="checkbox" {...register("isFree")} id="isFree" />
+                        </label>
+
+                    </div>
+                    <div className="form_part">
                         <label htmlFor="front_image">
                             <p>
                                 <FaStarOfLife size={8} />
@@ -186,7 +208,7 @@ const AddProject = () => {
                                 customRequest={({ file }) => handleUpload(file, setFrontImage)}
                                 showUploadList={false}
                             >
-                                <Button>
+                                <Button style={{ width: "250px" }}>
                                     <FaUpload /> Rasmni tanlash
                                 </Button>
                             </Upload>
@@ -211,7 +233,7 @@ const AddProject = () => {
                                 customRequest={({ file }) => handleUpload(file, setBackImage)}
                                 showUploadList={false}
                             >
-                                <Button>
+                                <Button style={{ width: "250px" }}>
                                     <FaUpload /> Rasmni tanlash
                                 </Button>
                             </Upload>
@@ -236,7 +258,7 @@ const AddProject = () => {
                                 customRequest={({ file }) => handleUpload(file, setRightImage)}
                                 showUploadList={false}
                             >
-                                <Button>
+                                <Button style={{ width: "250px" }}>
                                     <FaUpload /> Rasmni tanlash
                                 </Button>
                             </Upload>
@@ -261,7 +283,7 @@ const AddProject = () => {
                                 customRequest={({ file }) => handleUpload(file, setLeftImage)}
                                 showUploadList={false}
                             >
-                                <Button>
+                                <Button style={{ width: "250px" }}>
                                     <FaUpload /> Rasmni tanlash
                                 </Button>
                             </Upload>
@@ -277,27 +299,6 @@ const AddProject = () => {
                                 </p>
                             </div>
                         )}
-                        <label htmlFor="currency">
-                            <p>
-                                <FaStarOfLife size={8} />
-                                Afzal valyuta
-                            </p>
-                            <select disabled={id || isFree} {...register("currency", { required: "Valyutani tanlang" })} id="currency">
-                                <option value="USD">USD</option>
-                                <option value="UZS">UZS</option>
-                            </select>
-                        </label>
-                        <label htmlFor="leave_date">
-                            <p>
-                                <FaStarOfLife size={8} />
-                                Mashinaning chiqib ketish sanasi</p>
-                            <input {...register("leave_date", { required: "Chiqib ketish sanasini kiriting" })} type="date" id="leave_date" />
-                        </label>
-                        <label style={{ flexDirection: "row", alignItems: "center", gap: "12px" }} htmlFor="isFree">
-                            <p>Bepul</p>
-                            <input style={{ background: "red", width: "20px" }} type="checkbox" {...register("isFree")} id="isFree" />
-                        </label>
-
                     </div>
                     <div className="form_part">
                         <p>Ko'rsatiladigan servislar</p>
@@ -391,6 +392,8 @@ const AddProject = () => {
                 <button type="submit">Saqlash</button>
 
             </form>
+
+            
         </div>
     );
 };
