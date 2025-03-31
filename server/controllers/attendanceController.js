@@ -4,7 +4,6 @@ const User = require('../models/userModel');
 exports.recordAttendance = async (req, res) => {
     try {
         const { user_id, date } = req.body;
-        console.log(date);
         const user = await User.findById(user_id);
         const userArriveTime = moment(user.start_time, "HH:mm");
         const userLeaveTime = moment(user.end_time)

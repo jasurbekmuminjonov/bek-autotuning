@@ -349,7 +349,6 @@ const Projects = () => {
       render: (text) => moment(text).format("DD.MM.YYYY"),
     },
   ];
-  console.log(filteredProjects);
 
   return (
     <div className="manager_page">
@@ -363,11 +362,11 @@ const Projects = () => {
           <p>Tugallangan mashinalar</p>
         </div>
       </div>
-      <Modal width={700} height={300} open={imageModal} footer={[]} onCancel={() => {
+      <Modal style={{ flexGrow: "1" }} height={300} open={imageModal} footer={[]} onCancel={() => {
         setImageModal(false);
         setImageId("");
       }} title="Mashinaning rasmlari">
-        <div className="modal_form" style={{ flexDirection: "row", flexWrap: "wrap" }}>
+        <div className="modal_form" style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center" }}>
           <img style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain", padding: "6px" }} src={projects.find((p) => p._id === imageId)?.front_image} alt="" />
           <img style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain", padding: "6px" }} src={projects.find((p) => p._id === imageId)?.back_image} alt="" />
           <img style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain", padding: "6px" }} src={projects.find((p) => p._id === imageId)?.right_image} alt="" />

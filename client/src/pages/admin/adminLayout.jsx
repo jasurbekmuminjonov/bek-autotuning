@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGetProjectsQuery } from '../../context/services/project.service';
 import { useGetUsersQuery } from '../../context/services/user.service';
 import TotalAmountPaidChart from '../../components/chart/totalAmountPaidChart';
@@ -10,42 +10,48 @@ import { FaDoorOpen } from "react-icons/fa";
 const AdminLayout = () => {
     const { data: projects = [] } = useGetProjectsQuery()
     const { data: users = [] } = useGetUsersQuery()
-    console.log(projects);
+    const [selectedCurrency, setSelectedCurrency] = useState("UZS")
 
     return (
         <div className='admin_layout'>
+
             <b>Umumiy statistika</b>
             <div className="cards">
                 <div className="card">
                     <img src={income} alt="" />
-                    <b>{Number(projects.filter(p => p.currency === "UZS").reduce((acc, item) => acc + item.total_amount_paid, 0).toFixed()).toLocaleString()} UZS</b>
-                    <p>Umumiy kirim(UZS)</p>
+                    <b>{Number(projects.filter(p => p.currency === selectedCurrency).reduce((acc, item) => acc + item.total_amount_paid, 0).toFixed()).toLocaleString()} {selectedCurrency}</b>
+                    <p>Umumiy kirim({selectedCurrency})</p>
                 </div>
-                <div className="card">
+                {/* <div className="card">
                     <img src={income} alt="" />
 
                     <b>{projects.filter(p => p.currency === "USD").reduce((acc, item) => acc + item.total_amount_paid, 0).toLocaleString()} USD</b>
                     <p>Umumiy kirim(USD)</p>
-                </div>
+                </div> */}
                 <div className="card">
                     <img src={outgoing} alt="" />
-                    <b>{Number(projects.filter(p => p.currency === "UZS").reduce((acc, item) => acc + item.total_spending_amount, 0).toFixed()).toLocaleString()} UZS</b>
-                    <p>Umumiy xarajat(UZS)</p>
+                    <b>{Number(projects.filter(p => p.currency === selectedCurrency).reduce((acc, item) => acc + item.total_spending_amount, 0).toFixed()).toLocaleString()} {selectedCurrency}</b>
+                    <p>Umumiy xarajat({selectedCurrency})</p>
                 </div>
-                <div className="card">
+                {/* <div className="card">
                     <img src={outgoing} alt="" />
                     <b>{projects.filter(p => p.currency === "USD").reduce((acc, item) => acc + item.total_spending_amount, 0).toLocaleString()} USD</b>
                     <p>Umumiy xarajat(USD)</p>
-                </div>
+                </div> */}
             </div>
-            <b>Mashinalarning umumiy to'lovlari(UZS)</b>
-            <TotalAmountPaidChart projects={projects.filter(p => p.currency === "UZS").sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} />
-            <b>Mashinalarning umumiy to'lovlari(USD)</b>
-            <TotalAmountPaidChart projects={projects.filter(p => p.currency === "USD").sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} />
-            <b>Mashinalarning sof foydasi(UZS)</b>
-            <NetProfitChart projects={projects.filter(p => p.currency === "UZS").sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} />
-            <b>Mashinalarning sof foydasi(USD)</b>
-            <NetProfitChart projects={projects.filter(p => p.currency === "USD").sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} />
+            <select style={{ padding: "12px", border: "1px solid #ccc", alignSelf: "start", display: "flex" }} value={selectedCurrency} onChange={(e) => setSelectedCurrency(e.target.value)}>
+                <option value="UZS">UZS</option>
+                <option value="USD">USD</option>
+            </select>
+            <b>Mashinalarning umumiy to'lovlari</b>
+            <TotalAmountPaidChart projects={projects.filter(p => p.currency === selectedCurrency).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} />
+            {/* <b>Mashinalarning umumiy to'lovlari(USD)</b>
+            <TotalAmountPaidChart projects={projects.filter(p => p.currency === selectedCurrency).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} /> */}
+            <b>Mashinalarning sof foydasi</b>
+            <NetProfitChart projects={projects.filter(p => p.currency === selectedCurrency).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} />
+            {/* <b>Mashinalarning sof foydasi(USD)</b>
+            <NetProfitChart projects={projects.filter(p => p.currency === selectedCurrency).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))} /> */}
+
             <button onClick={() => {
                 localStorage.clear();
                 window.location.href = "/"

@@ -53,7 +53,6 @@ const Approve = () => {
         }
     }
 
-    console.log(userProjects);
 
     if (userProjects.length < 1) {
         return (

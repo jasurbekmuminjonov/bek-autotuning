@@ -49,7 +49,7 @@ const TotalAmountPaidChart = ({ projects }) => {
                     display: false,
                 },
                 grid: {
-                    display: false,
+                    display: true,
                 },
             },
             x: {
@@ -57,7 +57,7 @@ const TotalAmountPaidChart = ({ projects }) => {
                     display: true,
                 },
                 grid: {
-                    display: false,
+                    display: true,
                 },
             },
         },

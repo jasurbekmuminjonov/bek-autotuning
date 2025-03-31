@@ -51,7 +51,7 @@ const NetProfitChart = ({ projects }) => {
                     display: false,
                 },
                 grid: {
-                    display: false,
+                    display: true,
                 },
             },
             x: {
@@ -59,7 +59,7 @@ const NetProfitChart = ({ projects }) => {
                     display: true,
                 },
                 grid: {
-                    display: false,
+                    display: true,
                 },
             },
         },
