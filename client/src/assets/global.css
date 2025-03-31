@@ -904,3 +904,22 @@ body::-webkit-scrollbar {
   padding: 6px;
   border: 1px solid #000;
 }
+.project_stats {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 6px;
+}
+.project_stat_card{
+  width: 220px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+  background-color: #fff;
+  border: 1px solid #000;
+  justify-content: center;
+  align-items: center;
+}

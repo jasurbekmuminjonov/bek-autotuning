@@ -14,7 +14,7 @@ exports.recordAttendance = async (req, res) => {
         );
         if (isLeaved) {
             const leaveDiff = moment(date).diff(moment(isLeaved.arrive_time), 'minutes')
-            if (leaveDiff < 1) {
+            if (leaveDiff < 10) {
                 return res.status(400).json({ message: "Ketish vaqti juda erta" });
             }
             isLeaved.leave_time = date;

@@ -353,6 +353,16 @@ const Projects = () => {
 
   return (
     <div className="manager_page">
+      <div className="project_stats">
+        <div className="project_stat_card">
+          <b>{projects.filter(p => p.status === "inprogress").length} ta</b>
+          <p>Jarayondagi mashinalar</p>
+        </div>
+        <div className="project_stat_card">
+          <b>{projects.filter(p => p.status === "finished").length} ta</b>
+          <p>Tugallangan mashinalar</p>
+        </div>
+      </div>
       <Modal width={700} height={300} open={imageModal} footer={[]} onCancel={() => {
         setImageModal(false);
         setImageId("");
@@ -374,7 +384,7 @@ const Projects = () => {
         open={open}
       >
         <form
-        autoComplete='off'
+          autoComplete='off'
           onSubmit={async (e) => {
             e.preventDefault();
             const amount = Number(e.target.amount.value);
