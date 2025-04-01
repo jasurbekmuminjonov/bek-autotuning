@@ -158,9 +158,84 @@ const Salary = () => {
           .reduce((acc, p) => acc + p.amount, 0)
           ?.toLocaleString() + " UZS" || 0,
     },
+    // {
+    //   title: "Davomat jarimalari",
+    //   render: (_, record) => <span style={{ padding: "6px", cursor: "pointer", background: "red", color: "#fff" }}>{"-" + calculatePenalties(record).toLocaleString() + " UZS" || 0}</span>,
+    // },
     {
       title: "Davomat jarimalari",
-      render: (_, record) => <span style={{ padding: "6px", background: "red", color: "#fff" }}>{"-" + calculatePenalties(record).toLocaleString() + " UZS" || 0}</span>,
+      render: (_, record) => {
+        const penalties = [];
+
+        const today = moment().format("YYYY-MM-DD");
+        const daysInMonth = moment(filters.month).daysInMonth();
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = moment(filters.month).date(day).format("YYYY-MM-DD");
+
+          if (date > today) break;
+
+          const attendance = record.attendance.find((att) =>
+            moment(att.arrive_time).isSame(date, "day")
+          );
+          const delay = record.delays.find((del) =>
+            moment(del.delay_date).isSame(date, "day")
+          );
+          const isWeekend = record.weekends.some((weekend) =>
+            moment(weekend).isSame(date, "day")
+          );
+
+          if (!attendance && !isWeekend) {
+            const workHours = moment(record.end_time, "HH:mm").diff(
+              moment(record.start_time, "HH:mm"),
+              "hours"
+            );
+            const fine = workHours * 10000;
+
+            penalties.push({
+              date,
+              arrive_time: "-",
+              leave_time: "-",
+              delay_hours: "Ha",
+              fine: fine.toLocaleString() + " UZS",
+            });
+          }
+
+          if (delay) {
+            penalties.push({
+              date,
+              arrive_time: attendance.arrive_time ? moment(attendance.arrive_time).format("HH:mm") : "-",
+              leave_time: attendance.leave_time ? moment(attendance.leave_time).format("HH:mm") : "-",
+              delay_hours: (delay.delay_minutes / 60).toFixed(2) + " soat",
+              fine: ((delay.delay_minutes / 60) * 10000).toLocaleString() + " UZS",
+            });
+          }
+        }
+
+        return (
+          <Popover
+            placement="bottom"
+            title="Jarimalar tafsiloti"
+            content={
+              <Table
+                dataSource={penalties}
+                pagination={{ pageSize: 8 }}
+                columns={[
+                  { title: "Sana", dataIndex: "date", key: "date" },
+                  { title: "Kelgan vaqti", dataIndex: "arrive_time", key: "arrive_time" },
+                  { title: "Ketgan vaqti", dataIndex: "leave_time", key: "leave_time" },
+                  { title: "Kech qolgan", dataIndex: "delay_hours", key: "delay_hours" },
+                  { title: "Jarima summasi", dataIndex: "fine", key: "fine" },
+                ]}
+              />
+            }
+          >
+            <span style={{ padding: "6px", cursor: "pointer", background: "red", color: "#fff" }}>
+              {"-" + penalties.reduce((acc, p) => acc + parseInt(p.fine.replace(/\D/g, "")), 0).toLocaleString() + " UZS"}
+            </span>
+          </Popover>
+        );
+      },
     },
     {
       title: "Qolgan oylik",
