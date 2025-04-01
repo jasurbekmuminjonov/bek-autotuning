@@ -32,15 +32,31 @@ export const userApi = apiSlice.injectEndpoints({
         }),
         editUser: builder.mutation({
             query: ({ body, user_id }) => ({
-                url: `/user/${user_id}`, 
+                url: `/user/${user_id}`,
                 method: "PUT",
                 body,
             }),
             invalidatesTags: ["User"],
         }),
-        
+        setWeekend: builder.mutation({
+            query: ({ body, user_id }) => ({
+                url: `/user/weekend/${user_id}`,
+                method: "PUT",
+                body,
+            }),
+            invalidatesTags: ["User"],
+        }),
+        removeWeekend: builder.mutation({
+            query: ({ body, user_id }) => ({
+                url: `/user/weekend/${user_id}`,
+                method: "DELETE",
+                body,
+            }),
+            invalidatesTags: ["User"],
+        }),
+
 
     })
 })
 
-export const { useCreateUserMutation, useGetUserBalanceQuery, useGetUserQuery, useGetUsersQuery, useLazyGetUserProjectsQuery, useEditUserMutation, useLazyGetAllUserProjectsQuery } = userApi;
+export const { useCreateUserMutation, useSetWeekendMutation, useRemoveWeekendMutation, useGetUserBalanceQuery, useGetUserQuery, useGetUsersQuery, useLazyGetUserProjectsQuery, useEditUserMutation, useLazyGetAllUserProjectsQuery } = userApi;

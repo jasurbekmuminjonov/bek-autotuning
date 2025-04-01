@@ -390,3 +390,31 @@ exports.deleteSalary = async (req, res) => {
     res.status(500).json({ message: "Ichki server xatosi" });
   }
 };
+
+
+exports.setWeekend = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const { date } = req.body;
+    await User.findByIdAndUpdate(user_id, { $push: { weekends: date } })
+
+    return res.json({ message: "Dam olish kuni belgilandi" })
+
+  } catch (err) {
+    console.log(err.message)
+    return res.status(500).json({ message: "Serverda xatolik" });
+  }
+}
+
+exports.removeWeekend = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const { date } = req.body;
+    await User.findByIdAndUpdate(user_id, { $pull: { weekends: date } })
+    return res.json({ message: "Dam olish kuni o'chirildi" })
+
+  } catch (err) {
+    console.log(err.message)
+    return res.status(500).json({ message: "Serverda xatolik" });
+  }
+}

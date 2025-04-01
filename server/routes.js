@@ -4,7 +4,7 @@ const auth = require('./middlewares/auth');
 const { login } = require('./controllers/authController');
 const { createService, getService, updateService, deleteService } = require('./controllers/serviceController');
 const { getProject, createProject, updateProject, deleteProject, finishProject, getProjectByUser, getAllProjectByUser, createPayment, pauseToggle } = require('./controllers/projectController');
-const { getUsers, getUser, getProjectsByUser, getProjectsForApprove, getProjectsForFinish, approveService, finishService, rejectService, getBalance, editUser, getProjectsForStart, startProject, getApprovedProjects, payUser, updateSalary, deleteSalary } = require('./controllers/userController');
+const { getUsers, getUser, getProjectsByUser, getProjectsForApprove, getProjectsForFinish, approveService, finishService, rejectService, getBalance, editUser, getProjectsForStart, startProject, getApprovedProjects, payUser, updateSalary, deleteSalary, setWeekend, removeWeekend } = require('./controllers/userController');
 const { createExpense, getExpense, updateExpense, deleteExpense } = require('./controllers/expenseController');
 const { recordAttendance } = require('./controllers/attendanceController');
 const rt = express.Router();
@@ -45,6 +45,8 @@ rt.get("/user/all/projects/:user_id", auth, getAllProjectByUser) //get all proje
 rt.post("/user/pay/:user_id", auth, payUser) //pay user
 rt.put("/user/salary", auth, updateSalary)
 rt.delete("/user/salary", auth, deleteSalary)
+rt.put("/user/weekend/:user_id", auth, setWeekend) //update user
+rt.delete("/user/weekend/:user_id", auth, removeWeekend) //update user
 rt.get('/user/:user_id/', auth, getBalance)
 rt.put("/user/:user_id", auth, editUser) //update user
 

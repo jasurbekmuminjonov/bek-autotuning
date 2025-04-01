@@ -64,6 +64,44 @@ const Salary = () => {
     }
   }
 
+
+  const calculatePenalties = (user) => {
+    const workHours = moment(user.end_time, "HH:mm").diff(
+      moment(user.start_time, "HH:mm"),
+      "hours"
+    );
+    const dailyPenalty = workHours * 10000;
+
+    let totalPenalty = 0;
+    const today = moment().format("YYYY-MM-DD");
+
+    const daysInMonth = moment(filters.month).daysInMonth();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = moment(filters.month).date(day).format("YYYY-MM-DD");
+
+      if (date > today) break;
+
+      const wasPresent = user.attendance.some((att) =>
+        moment(att.arrive_time).isSame(date, "day")
+      );
+      const isWeekend = user.weekends.some((weekend) =>
+        moment(weekend).isSame(date, "day")
+      );
+
+      if (!wasPresent && !isWeekend) {
+        totalPenalty += dailyPenalty;
+      }
+    }
+
+    const delayPenalty = user.delays
+      .filter((delay) =>
+        moment(delay.delay_date).isSame(filters.month, "month")
+      )
+      .reduce((acc, delay) => acc + (delay.delay_minutes / 60) * 10000, 0);
+
+    return totalPenalty + delayPenalty;
+  };
+
   useEffect(() => {
     const calculateSalaries = async () => {
       const salaries = {};
@@ -121,10 +159,14 @@ const Salary = () => {
           ?.toLocaleString() + " UZS" || 0,
     },
     {
+      title: "Davomat jarimalari",
+      render: (_, record) => <span style={{ padding: "6px", background: "red", color: "#fff" }}>{"-" + calculatePenalties(record).toLocaleString() + " UZS" || 0}</span>,
+    },
+    {
       title: "Qolgan oylik",
       render: (_, record) =>
         (
-          totalSalaries[record._id] -
+          totalSalaries[record._id] - calculatePenalties(record) -
           record?.paychecks
             .filter((p) =>
               filters.month
@@ -134,6 +176,7 @@ const Salary = () => {
             .reduce((acc, p) => acc + p.amount, 0)
         )?.toLocaleString() + " UZS" || 0,
     },
+
     {
       title: "Amallar",
       render: (_, record) => (
@@ -146,7 +189,7 @@ const Salary = () => {
                 dataSource={record?.paychecks.filter((p) =>
                   filters.month
                     ? moment(p.paycheck_date).format("YYYY-MM") ===
-                      filters.month
+                    filters.month
                     : true
                 )}
                 columns={[

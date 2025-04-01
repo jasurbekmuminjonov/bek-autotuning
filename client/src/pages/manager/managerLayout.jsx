@@ -20,7 +20,7 @@ const ManagerLayout = () => {
     return (
         <div className='manager_layout'>
             <aside style={collapsed ? { display: "none" } : { display: "flex" }}>
-                <p onClick={() => window.location.href = "/"}>BEK AUTOTUNING</p>
+                <p onClick={() => window.location.href = "/"}>{localStorage.getItem('admin_name')}</p>
                 <div className="links">
                     <Link className={`aside_link ${location.pathname === "/" && "active"}`} to="/">
                         <BiSolidCarMechanic />

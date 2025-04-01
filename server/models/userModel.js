@@ -87,6 +87,10 @@ const userSchema = new mongoose.Schema({
             leave_time: Date
         }],
         default: []
+    },
+    weekends: {
+        type: [Date],
+        default: []
     }
 
 }, { timestamps: true });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AdminLayout from './pages/admin/adminLayout';
 import ManagerLayout from './pages/manager/managerLayout';
 import UserLayout from './pages/user/userLayout';
@@ -10,6 +10,9 @@ const App = () => {
   const role = localStorage.getItem('role');
   const token = localStorage.getItem('access_token');
   const loading = useSelector(state => state.loading)
+  useEffect(() => {
+    document.title = localStorage.getItem('admin_name');
+  }, []);
   return (
     <div className='wrapper'>
       {loading && <Loading />}
