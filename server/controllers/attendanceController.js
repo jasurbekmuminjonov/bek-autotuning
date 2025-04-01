@@ -23,6 +23,10 @@ exports.recordAttendance = async (req, res) => {
                 leave_time: null
             })
             const arriveDiff = moment(moment(date).format("HH:mm"), "HH:mm").diff(userArriveTime, 'minutes');
+            console.log(arriveDiff);
+            console.log(date);
+            console.log(userArriveTime);
+
             if (arriveDiff > 1) {
                 user.delays.push({
                     delay_date: date,
