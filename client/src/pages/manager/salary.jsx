@@ -79,7 +79,8 @@ const Salary = () => {
     for (let day = 1; day <= daysInMonth; day++) {
       const date = moment(filters.month).date(day).format("YYYY-MM-DD");
 
-      if (date > today) break;
+      if (date >= today) continue;
+      if (moment(user.createdAt).isAfter(date, "day")) continue;
 
       const wasPresent = user.attendance.some((att) =>
         moment(att.arrive_time).isSame(date, "day")
@@ -158,10 +159,6 @@ const Salary = () => {
           .reduce((acc, p) => acc + p.amount, 0)
           ?.toLocaleString() + " UZS" || 0,
     },
-    // {
-    //   title: "Davomat jarimalari",
-    //   render: (_, record) => <span style={{ padding: "6px", cursor: "pointer", background: "red", color: "#fff" }}>{"-" + calculatePenalties(record).toLocaleString() + " UZS" || 0}</span>,
-    // },
     {
       title: "Davomat jarimalari",
       render: (_, record) => {
@@ -173,7 +170,9 @@ const Salary = () => {
         for (let day = 1; day <= daysInMonth; day++) {
           const date = moment(filters.month).date(day).format("YYYY-MM-DD");
 
-          if (date > today) break;
+          if (date >= today) continue;
+          if (moment(record.createdAt).isAfter(date, "day")) continue;
+
 
           const attendance = record.attendance.find((att) =>
             moment(att.arrive_time).isSame(date, "day")
@@ -230,10 +229,10 @@ const Salary = () => {
               />
             }
           >
-            <span style={{ padding: "6px", cursor: "pointer", background: "red", color: "#fff" }}>
-              {"-" + penalties.reduce((acc, p) => acc + parseInt(p.fine.replace(/\D/g, "")), 0).toLocaleString() + " UZS"}
+            <span style={penalties.reduce((acc, p) => acc + parseInt(p.fine.replace(/\D/g, "")), 0) > 0 ? { padding: "6px", cursor: "pointer", background: "red", color: "#fff" } : { padding: "6px", cursor: "pointer", background: "green", color: "#fff" }}>
+              {penalties.reduce((acc, p) => acc + parseInt(p.fine.replace(/\D/g, "")), 0).toLocaleString() + " UZS"}
             </span>
-          </Popover>
+          </Popover >
         );
       },
     },
