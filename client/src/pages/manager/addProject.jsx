@@ -65,6 +65,10 @@ const AddProject = () => {
                         ...service.amount_to_paid,
                         amount: Number(service.amount_to_paid.amount),
                     },
+                    extra_profit: {
+                        ...service.extra_profit,
+                        amount: Number(service.extra_profit.amount),
+                    },
                     user_salary_amount: {
                         ...service.user_salary_amount,
                         amount: Number(service.user_salary_amount.amount),
@@ -126,7 +130,6 @@ const AddProject = () => {
             <form autoComplete='off' onSubmit={handleSubmit(onSubmit)} className="addproject_form">
                 <div className="forms">
                     <div className="form_part">
-                        <p>Klent ma'lumotlari</p>
                         <label htmlFor="client_name">
                             <p>
                                 <FaStarOfLife size={8} />
@@ -149,7 +152,6 @@ const AddProject = () => {
                                 }}
                             />
                         </label>
-                        <p>Mashina ma'lumotlari</p>
                         <label htmlFor="car_name">
                             <p>
                                 <FaStarOfLife size={8} />
@@ -187,19 +189,19 @@ const AddProject = () => {
                             </select>
                         </label>
                         <label htmlFor="leave_date">
-                            <p style={{fontSize:"14px"}}>
+                            <p style={{ fontSize: "14px" }}>
                                 <FaStarOfLife size={8} />
                                 Mashinaning chiqib ketish sanasi</p>
                             <input {...register("leave_date", { required: "Chiqib ketish sanasini kiriting" })} type="date" id="leave_date" />
                         </label>
                         <label style={{ flexDirection: "row", alignItems: "center", gap: "12px" }} htmlFor="isFree">
                             <p>Bepul</p>
-                            <input style={{ background: "red", width: "20px" }} type="checkbox" {...register("isFree")} id="isFree" />
+                            <input style={{ width: "20px" }} type="checkbox" {...register("isFree")} id="isFree" />
                         </label>
 
                     </div>
-                    <div className="form_part">
-                        <label htmlFor="front_image">
+                    <div className="form_part" style={{ flexGrow: 1, flexDirection: "row", flexWrap: "wrap" }}>
+                        <label htmlFor="front_image" style={{ width: "250px" }}>
                             <p>
                                 <FaStarOfLife size={8} />
                                 Mashinaning old rasmi
@@ -208,23 +210,18 @@ const AddProject = () => {
                                 customRequest={({ file }) => handleUpload(file, setFrontImage)}
                                 showUploadList={false}
                             >
-                                <Button style={{ width: "250px" }}>
+                                <Button style={{ width: "250px", height: "35px", border: "1px solid #ccc", borderRadius: "0" }}>
                                     <FaUpload /> Rasmni tanlash
                                 </Button>
                             </Upload>
+                            {frontImage && (
+                                <div style={{ width: "100%" }}>
+                                    <p>Yuklangan rasm:</p>
+                                    <img style={{ width: "100%", objectFit: "contain" }} src={frontImage} alt="Uploaded" />
+                                </div>
+                            )}
                         </label>
-                        {frontImage && (
-                            <div style={{ width: "25%" }}>
-                                <p>Yuklangan rasm:</p>
-                                <img style={{ width: "100%", objectFit: "contain" }} src={frontImage} alt="Uploaded" />
-                                <p>
-                                    <a href={frontImage} target="_blank" rel="noopener noreferrer">
-                                        Rasm URL manzili
-                                    </a>
-                                </p>
-                            </div>
-                        )}
-                        <label htmlFor="front_image">
+                        <label style={{ width: "250px" }} htmlFor="front_image">
                             <p>
                                 <FaStarOfLife size={8} />
                                 Mashinaning orqa rasmi
@@ -233,23 +230,18 @@ const AddProject = () => {
                                 customRequest={({ file }) => handleUpload(file, setBackImage)}
                                 showUploadList={false}
                             >
-                                <Button style={{ width: "250px" }}>
+                                <Button style={{ width: "250px", height: "35px", border: "1px solid #ccc", borderRadius: "0" }}>
                                     <FaUpload /> Rasmni tanlash
                                 </Button>
                             </Upload>
+                            {backImage && (
+                                <div style={{ width: "100%" }}>
+                                    <p>Yuklangan rasm:</p>
+                                    <img style={{ width: "100%", objectFit: "contain" }} src={backImage} alt="Uploaded" />
+                                </div>
+                            )}
                         </label>
-                        {backImage && (
-                            <div style={{ width: "25%" }}>
-                                <p>Yuklangan rasm:</p>
-                                <img style={{ width: "100%", objectFit: "contain" }} src={backImage} alt="Uploaded" />
-                                <p>
-                                    <a href={backImage} target="_blank" rel="noopener noreferrer">
-                                        Rasm URL manzili
-                                    </a>
-                                </p>
-                            </div>
-                        )}
-                        <label htmlFor="front_image">
+                        <label style={{ width: "250px" }} htmlFor="front_image">
                             <p>
                                 <FaStarOfLife size={8} />
                                 Mashinaning o'ng rasmi
@@ -258,23 +250,18 @@ const AddProject = () => {
                                 customRequest={({ file }) => handleUpload(file, setRightImage)}
                                 showUploadList={false}
                             >
-                                <Button style={{ width: "250px" }}>
+                                <Button style={{ width: "250px", height: "35px", border: "1px solid #ccc", borderRadius: "0" }}>
                                     <FaUpload /> Rasmni tanlash
                                 </Button>
                             </Upload>
+                            {rightImage && (
+                                <div style={{ width: "100%" }}>
+                                    <p>Yuklangan rasm:</p>
+                                    <img style={{ width: "100%", objectFit: "contain" }} src={rightImage} alt="Uploaded" />
+                                </div>
+                            )}
                         </label>
-                        {rightImage && (
-                            <div style={{ width: "25%" }}>
-                                <p>Yuklangan rasm:</p>
-                                <img style={{ width: "100%", objectFit: "contain" }} src={rightImage} alt="Uploaded" />
-                                <p>
-                                    <a href={rightImage} target="_blank" rel="noopener noreferrer">
-                                        Rasm URL manzili
-                                    </a>
-                                </p>
-                            </div>
-                        )}
-                        <label htmlFor="front_image">
+                        <label style={{ width: "250px" }} htmlFor="front_image">
                             <p>
                                 <FaStarOfLife size={8} />
                                 Mashinaning chap rasmi
@@ -283,25 +270,20 @@ const AddProject = () => {
                                 customRequest={({ file }) => handleUpload(file, setLeftImage)}
                                 showUploadList={false}
                             >
-                                <Button style={{ width: "250px" }}>
+                                <Button style={{ width: "250px", height: "35px", border: "1px solid #ccc", borderRadius: "0" }}>
                                     <FaUpload /> Rasmni tanlash
                                 </Button>
                             </Upload>
+                            {leftImage && (
+                                <div style={{ width: "100%" }}>
+                                    <p>Yuklangan rasm:</p>
+                                    <img style={{ width: "100%", objectFit: "contain" }} src={leftImage} alt="Uploaded" />
+                                </div>
+                            )}
                         </label>
-                        {leftImage && (
-                            <div style={{ width: "25%" }}>
-                                <p>Yuklangan rasm:</p>
-                                <img style={{ width: "100%", objectFit: "contain" }} src={leftImage} alt="Uploaded" />
-                                <p>
-                                    <a href={leftImage} target="_blank" rel="noopener noreferrer">
-                                        Rasm URL manzili
-                                    </a>
-                                </p>
-                            </div>
-                        )}
                     </div>
                     <div className="form_part">
-                        <p>Ko'rsatiladigan servislar</p>
+                        <p>Servislar</p>
                         {fields.map((item, index) => (
                             <div className='service' key={item.id}>
                                 <label>
@@ -325,7 +307,7 @@ const AddProject = () => {
                                     </select>
                                 </label>
                                 <label>
-                                    Xizmat narxi:
+                                    Servis narxi:
                                     <input disabled={isFree} {...register(`services_providing.${index}.amount_to_paid.amount`)} type="number" onWheel={(e) => {
                                         e.preventDefault();
                                     }} />
@@ -341,13 +323,24 @@ const AddProject = () => {
                                     }}  {...register(`services_providing.${index}.salaryType`)} id="salaryType">
                                         <option value="salary">Maosh</option>
                                         <option value="percent">Foiz</option>
+                                        <option value="percent_with_profit">Foiz + alohida foyda</option>
                                     </select>
                                 </label>
                                 <label>
                                     Ishchining maoshi:
-                                    <input disabled={watch("isFree") || watch(`services_providing.${index}.salaryType`) === "percent"} {...register(`services_providing.${index}.user_salary_amount.amount`)} type="number" onWheel={(e) => {
+                                    <input disabled={watch("isFree") || watch(`services_providing.${index}.salaryType`) !== "salary"} {...register(`services_providing.${index}.user_salary_amount.amount`)} type="number" onWheel={(e) => {
                                         e.preventDefault();
                                     }} />
+                                </label>
+                                <label>
+                                    Alohida foyda:
+                                    <input disabled={isFree || watch(`services_providing.${index}.salaryType`) !== "percent_with_profit"} {...register(`services_providing.${index}.extra_profit.amount`)} type="number" onWheel={(e) => {
+                                        e.preventDefault();
+                                    }} />
+                                    <select disabled={isFree || watch(`services_providing.${index}.salaryType`) !== "percent_with_profit"} {...register(`services_providing.${index}.extra_profit.currency`)}>
+                                        <option value="UZS">UZS</option>
+                                        <option value="USD">USD</option>
+                                    </select>
                                 </label>
                                 <label>
                                     Boshlash sanasi:
@@ -365,7 +358,7 @@ const AddProject = () => {
                                         e.preventDefault();
                                     }} defaultValue={index + 1} />
                                 </label>
-                                <button type="button" onClick={() => remove(index)}>O‘chirish</button>
+                                <button style={{ width: "250px", border: "1px solid red", color: "red", background: "transparent" }} type="button" onClick={() => remove(index)}>Servisni o'chirish</button>
                             </div>
                         ))}
                         <button
@@ -384,19 +377,16 @@ const AddProject = () => {
                                 })
                             }
                         >
-                            Xizmat qo‘shish
+                            Servis qo'shish
                         </button>
                     </div>
-
                 </div>
                 <button type="submit">Saqlash</button>
-
             </form>
-
-            
         </div>
     );
 };
+
 const SpendingsFieldArray = ({ control, parentIndex, register }) => {
     const { fields, append, remove } = useFieldArray({
         control,
@@ -423,11 +413,11 @@ const SpendingsFieldArray = ({ control, parentIndex, register }) => {
                         <input {...register(`services_providing.${parentIndex}.spendings.${index}.description`)} type="text" />
                     </label>
 
-                    <button type="button" onClick={() => remove(index)}>Harajatni o‘chirish</button>
+                    <button style={{ border: "1px solid red", color: "red", background: "transparent" }} type="button" onClick={() => remove(index)}>Harajatni o'chirish</button>
                 </div>
             ))}
 
-            <button type="button" onClick={() => append({ amount: { amount: null, currency: "UZS" }, description: "" })}>Harajat qo‘shish</button>
+            <button type="button" onClick={() => append({ amount: { amount: null, currency: "UZS" }, description: "" })}>Harajat qo'shish</button>
         </>
     );
 };

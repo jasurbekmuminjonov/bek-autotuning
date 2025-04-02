@@ -32,16 +32,27 @@ exports.createProject = async (req, res) => {
         const usdRate = await getUsdRate();
         let totalAmountToPaid = 0;
         let totalSpendingAmount = 0;
+        let totalExtraProfit = 0;
 
         req.body.services_providing.forEach(service => {
             if (service.amount_to_paid.currency === "USD") {
                 totalAmountToPaid += currency === "USD"
                     ? service.amount_to_paid.amount
                     : service.amount_to_paid.amount * usdRate;
-            } else if (service.amount_to_paid.currency === "UZS") {
+            } else {
                 totalAmountToPaid += currency === "UZS"
                     ? service.amount_to_paid.amount
                     : service.amount_to_paid.amount / usdRate;
+            }
+
+            if (service.extra_profit.currency === "USD") {
+                totalExtraProfit += currency === "USD"
+                    ? service.extra_profit.amount
+                    : service.extra_profit.amount * usdRate;
+            } else {
+                totalExtraProfit += currency === "UZS"
+                    ? service.extra_profit.amount
+                    : service.extra_profit.amount / usdRate;
             }
         });
 
@@ -51,7 +62,7 @@ exports.createProject = async (req, res) => {
                     totalSpendingAmount += currency === "USD"
                         ? spending.amount.amount
                         : spending.amount.amount * usdRate;
-                } else if (spending.amount.currency === "UZS") {
+                } else {
                     totalSpendingAmount += currency === "UZS"
                         ? spending.amount.amount
                         : spending.amount.amount / usdRate;
@@ -71,12 +82,23 @@ exports.createProject = async (req, res) => {
                 ? (currency === "USD" ? service.amount_to_paid.amount : service.amount_to_paid.amount * usdRate)
                 : (currency === "UZS" ? service.amount_to_paid.amount : service.amount_to_paid.amount / usdRate);
 
-            if (service.salaryType === "percent") {
-                let netProfit = (serviceAmountToPaid - totalSpendingAmountForService) * 0.8;
+            let extraProfitConverted = service.extra_profit.currency === "USD"
+                ? (currency === "USD" ? service.extra_profit.amount : service.extra_profit.amount * usdRate)
+                : (currency === "UZS" ? service.extra_profit.amount : service.extra_profit.amount / usdRate);
+
+            if (service.salaryType === "percent" || service.salaryType === "percent_with_profit") {
+                let netProfitBase = (serviceAmountToPaid - totalSpendingAmountForService - extraProfitConverted) * 0.2 + extraProfitConverted;
                 service.user_salary_amount = {
-                    amount: Math.round((currency === "USD" ? netProfit * usdRate : netProfit) * 100) / 100,
+                    amount: Math.round(((serviceAmountToPaid - totalSpendingAmountForService - extraProfitConverted) * 0.8) * (currency === "USD" ? usdRate : 1) * 100) / 100,
                     currency: "UZS"
                 };
+
+                if (service.salaryType === "percent_with_profit") {
+                    service.net_profit = {
+                        amount: Math.round(netProfitBase * 100) / 100,
+                        currency: currency
+                    };
+                }
             } else if (service.salaryType === "salary") {
                 let netProfit = serviceAmountToPaid - totalSpendingAmountForService - service.user_salary_amount.amount;
                 service.net_profit = {
@@ -89,7 +111,7 @@ exports.createProject = async (req, res) => {
                 ...service,
                 user_salary_amount: service.user_salary_amount,
                 net_profit: service.net_profit || {
-                    amount: Math.round(((totalAmountToPaid - totalSpendingAmount) * 0.2) * 100) / 100,
+                    amount: Math.round(((totalAmountToPaid - totalSpendingAmount) * 0.2 + totalExtraProfit) * 100) / 100,
                     currency: currency
                 }
             };
@@ -113,6 +135,9 @@ exports.createProject = async (req, res) => {
 
 
 
+
+
+
 exports.updateProject = async (req, res) => {
     try {
         const { id } = req.params;
@@ -128,61 +153,52 @@ exports.updateProject = async (req, res) => {
         let totalSpendingAmount = 0;
 
         editingProject.payment_log.forEach(payment => {
-            if (payment.currency === "USD") {
-                totalAmountPaid += currency === "USD"
-                    ? payment.amount
-                    : payment.amount * usdRate;
-            } else if (payment.currency === "UZS") {
-                totalAmountPaid += currency === "UZS"
-                    ? payment.amount
-                    : payment.amount / usdRate;
-            }
+            totalAmountPaid += payment.currency === "USD"
+                ? (currency === "USD" ? payment.amount : payment.amount * usdRate)
+                : (currency === "UZS" ? payment.amount : payment.amount / usdRate);
         });
 
         req.body.services_providing.forEach(service => {
-            if (service.amount_to_paid.currency === "USD") {
-                totalAmountToPaid += currency === "USD"
-                    ? service.amount_to_paid.amount
-                    : service.amount_to_paid.amount * usdRate;
-            } else if (service.amount_to_paid.currency === "UZS") {
-                totalAmountToPaid += currency === "UZS"
-                    ? service.amount_to_paid.amount
-                    : service.amount_to_paid.amount / usdRate;
-            }
+            totalAmountToPaid += service.amount_to_paid.currency === "USD"
+                ? (currency === "USD" ? service.amount_to_paid.amount : service.amount_to_paid.amount * usdRate)
+                : (currency === "UZS" ? service.amount_to_paid.amount : service.amount_to_paid.amount / usdRate);
         });
 
         req.body.services_providing.forEach(service => {
             service.spendings.forEach(spending => {
-                if (spending.amount.currency === "USD") {
-                    totalSpendingAmount += currency === "USD"
-                        ? spending.amount.amount
-                        : spending.amount.amount * usdRate;
-                } else if (spending.amount.currency === "UZS") {
-                    totalSpendingAmount += currency === "UZS"
-                        ? spending.amount.amount
-                        : spending.amount.amount / usdRate;
-                }
+                totalSpendingAmount += spending.amount.currency === "USD"
+                    ? (currency === "USD" ? spending.amount.amount : spending.amount.amount * usdRate)
+                    : (currency === "UZS" ? spending.amount.amount : spending.amount.amount / usdRate);
             });
         });
 
         req.body.services_providing = req.body.services_providing.map(service => {
             let totalSpendingAmountForService = service.spendings.reduce((acc, spending) => {
-                let spendingAmount = spending.amount.currency === "USD"
+                return acc + (spending.amount.currency === "USD"
                     ? (currency === "USD" ? spending.amount.amount : spending.amount.amount * usdRate)
-                    : (currency === "UZS" ? spending.amount.amount : spending.amount.amount / usdRate);
-                return acc + spendingAmount;
+                    : (currency === "UZS" ? spending.amount.amount : spending.amount.amount / usdRate));
             }, 0);
 
             let serviceAmountToPaid = service.amount_to_paid.currency === "USD"
                 ? (currency === "USD" ? service.amount_to_paid.amount : service.amount_to_paid.amount * usdRate)
                 : (currency === "UZS" ? service.amount_to_paid.amount : service.amount_to_paid.amount / usdRate);
 
-            if (service.salaryType === "percent") {
-                let netProfit = (serviceAmountToPaid - totalSpendingAmountForService) * 0.8;
+            let extraProfitConverted = service.extra_profit.currency === "USD"
+                ? (currency === "USD" ? service.extra_profit.amount : service.extra_profit.amount * usdRate)
+                : (currency === "UZS" ? service.extra_profit.amount : service.extra_profit.amount / usdRate);
+
+            if (service.salaryType === "percent" || service.salaryType === "percent_with_profit") {
+                let netProfitBase = (serviceAmountToPaid - totalSpendingAmountForService - extraProfitConverted) * 0.2 + extraProfitConverted;
                 service.user_salary_amount = {
-                    amount: Math.round((currency === "USD" ? netProfit * usdRate : netProfit) * 100) / 100,
+                    amount: Math.round(((serviceAmountToPaid - totalSpendingAmountForService - extraProfitConverted) * 0.8) * (currency === "USD" ? usdRate : 1) * 100) / 100,
                     currency: "UZS"
                 };
+                if (service.salaryType === "percent_with_profit") {
+                    service.net_profit = {
+                        amount: Math.round(netProfitBase * 100) / 100,
+                        currency: currency
+                    };
+                }
             } else if (service.salaryType === "salary") {
                 let netProfit = serviceAmountToPaid - totalSpendingAmountForService - service.user_salary_amount.amount;
                 service.net_profit = {
@@ -201,11 +217,6 @@ exports.updateProject = async (req, res) => {
             };
         });
 
-        const firstService = req.body.services_providing.find(service => service.index === 1);
-        if (firstService) {
-            firstService.status = "inprogress";
-            firstService.started_time = new Date().toISOString();
-        }
 
         req.body.total_amount_to_paid = Math.round(totalAmountToPaid * 100) / 100;
         req.body.total_spending_amount = Math.round(totalSpendingAmount * 100) / 100;

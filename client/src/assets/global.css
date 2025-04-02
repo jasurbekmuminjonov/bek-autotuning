@@ -318,13 +318,17 @@ body::-webkit-scrollbar {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+  overflow: auto;
 }
 .form_part {
-  flex-grow: 1;
+  width: 250px;
   height: 100%;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding-block-end: 12px;
 }
 .form_part > p {
   font-size: 20px;
@@ -911,7 +915,7 @@ body::-webkit-scrollbar {
   gap: 12px;
   padding-block: 6px;
 }
-.project_stat_card{
+.project_stat_card {
   width: 220px;
   height: 120px;
   display: flex;

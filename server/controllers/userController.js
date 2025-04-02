@@ -189,6 +189,7 @@ exports.startProject = async (req, res) => {
         service.started_time = new Date().toISOString();
       }
     });
+    project.createdAt = new Date(new Date().getTime() + 18000000).toISOString();
     await project.save();
     res.json({ message: "Mashina servisi jarayonda" });
   } catch (err) {
@@ -390,8 +391,6 @@ exports.deleteSalary = async (req, res) => {
     res.status(500).json({ message: "Ichki server xatosi" });
   }
 };
-
-
 exports.setWeekend = async (req, res) => {
   try {
     const { user_id } = req.params;
@@ -405,7 +404,6 @@ exports.setWeekend = async (req, res) => {
     return res.status(500).json({ message: "Serverda xatolik" });
   }
 }
-
 exports.removeWeekend = async (req, res) => {
   try {
     const { user_id } = req.params;

@@ -57,7 +57,7 @@ const projectSchema = new mongoose.Schema({
                 },
                 salaryType: {
                     type: String,
-                    enum: ["percent", "salary"]
+                    enum: ["percent", "salary", "percent_with_profit"]
                 },
                 net_profit: {
                     type: {
@@ -72,6 +72,20 @@ const projectSchema = new mongoose.Schema({
                         }
                     }
                 },
+                extra_profit: {
+                    type: {
+                        amount: {
+                            type: Number,
+                            default: 0
+                        },
+                        currency: {
+                            type: String,
+                            enum: ['USD', 'UZS'],
+                            default: 'UZS'
+                        }
+                    },
+                    required: true
+                },
                 amount_to_paid: {  // xizmat narxi
                     type: {
                         amount: {
@@ -84,7 +98,7 @@ const projectSchema = new mongoose.Schema({
                             default: 'UZS'
                         }
                     },
-                    required: true  
+                    required: true
                 },
                 user_salary_amount: {  // user uchun beriladigan maosh
                     type: {
@@ -227,7 +241,11 @@ const projectSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'admin',
         required: true
+    },
+    createdAt: {
+        type: Date,
+        default: new Date(new Date().getTime() + 18000000).toISOString()
     }
-}, { timestamps: true });
+});
 
 module.exports = mongoose.model('project', projectSchema);
