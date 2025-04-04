@@ -35,12 +35,12 @@ exports.createManager = async (req, res) => {
 exports.createUser = async (req, res) => {
     try {
         const { admin_id, role } = req.user;
-        const { login, password, name, start_time, end_time, image, last_name, middle_name, first_phone, second_phone } = req.body;
+        const { login, password, name, start_time, end_time, image, last_name, middle_name, first_phone, second_phone, isSpecial } = req.body;
         if (role === 'user') {
             return res.status(403).json({ message: "Sizning huquqlaringiz cheklangan" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ admin_id, login, password: hashedPassword, name, start_time, end_time, image, last_name, middle_name, first_phone, second_phone });
+        const user = new User({ admin_id, login, password: hashedPassword, name, start_time, end_time, image, last_name, middle_name, first_phone, second_phone, isSpecial });
         await user.save();
         res.json(user);
     } catch (err) {

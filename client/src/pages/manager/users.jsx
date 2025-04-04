@@ -56,6 +56,7 @@ const Users = () => {
         { title: "Tel raqam", dataIndex: "first_phone", key: "first_phone" },
         { title: "Uy tel raqami", dataIndex: "second_phone", key: "second_phone" },
         { title: "Login", dataIndex: "login", key: "login" },
+        { title: "Masofaviy", dataIndex: "isSpecial", render: (text) => text ? "Ha" : "Yo'q" },
         { title: "Ish boshlash vaqti", dataIndex: "start_time", key: "start_time" },
         { title: "Ish tugatish vaqti", dataIndex: "end_time", key: "end_time" },
         // { title: "Balans", dataIndex: "balance", key: "balance" },
@@ -163,7 +164,7 @@ const Users = () => {
                 setImage("")
                 setImageOpen(false);
             }}>
-                <img style={{ border: "1px solid #000" }} src={image} alt="" />
+                <img style={{ border: "1px solid #000", maxWidth: "100%" }} src={image} alt="" />
             </Modal>
             <Modal open={visible} title={editingUser ? "Ishchini tahrirlash" : "Ishchi qo'shish"} footer={[]} onCancel={() => {
                 setVisible(false);
@@ -204,11 +205,6 @@ const Users = () => {
                         <div style={{ width: "25%" }}>
                             <p>Yuklangan rasm:</p>
                             <img style={{ width: "100%", objectFit: "contain" }} src={imageUrl} alt="Uploaded" />
-                            <p>
-                                <a href={imageUrl} target="_blank" rel="noopener noreferrer">
-                                    Rasm URL manzili
-                                </a>
-                            </p>
                         </div>
                     )}
                     <Controller
@@ -241,6 +237,10 @@ const Users = () => {
                         )}
                     />
                     {errors.end_time && <span className='error'>{errors.end_time.message}</span>}
+                    <label style={{ alignItems: "center", justifySelf: "end", display: "flex", gap: "6px" }} htmlFor="isSpecial">
+                        <p>Masofaviy ishlaydi?</p>
+                        <input style={{ width: "20px", height: "20px" }} type="checkbox" id='isSpecial' {...register("isSpecial")} />
+                    </label>
                     <button type="submit">Saqlash</button>
                 </form>
             </Modal>
@@ -261,7 +261,7 @@ const Users = () => {
                     </button>
                 </div>
             </div>
-            <Table dataSource={users} columns={columns} />
+            <Table size='small' dataSource={users} columns={columns} />
         </div >
     );
 };

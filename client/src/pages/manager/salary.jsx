@@ -66,6 +66,9 @@ const Salary = () => {
 
 
   const calculatePenalties = (user) => {
+    if (user.isSpecial) {
+      return 0;
+    }
     const workHours = moment(user.end_time, "HH:mm").diff(
       moment(user.start_time, "HH:mm"),
       "hours"
@@ -162,6 +165,9 @@ const Salary = () => {
     {
       title: "Davomat jarimalari",
       render: (_, record) => {
+        if (record.isSpecial) {
+          return (<span style={{ padding: "6px", background: "green", color: "#fff" }}>{"0 UZS"}</span>);
+        };
         const penalties = [];
 
         const today = moment().format("YYYY-MM-DD");

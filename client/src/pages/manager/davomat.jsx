@@ -57,13 +57,12 @@ const Davomat = () => {
                 const today = moment().format("YYYY-MM-DD");
                 const isPast = moment(selectedDate).isBefore(today, "day");
                 const isWeekend = record.weekends.some(t => moment(t).format("YYYY-MM-DD") === selectedDate);
-                if (moment(record.createdAt).isSameOrAfter(selectedDate, "day")) {
+                if (moment(record.createdAt).isAfter(selectedDate, "day")) {
                     return (<span style={{ padding: "6px", background: "green", color: "#fff" }}>{"0 UZS"}</span>);
                 }
                 if (!isPast || isWeekend) {
                     return (<span style={{ padding: "6px", background: "green", color: "#fff" }}>{"0 UZS"}</span>);
                 }
-                
                 const attendance = record.attendance.find(a => moment(a.arrive_time).format("YYYY-MM-DD") === selectedDate);
                 const delay = record.delays.find(d => moment(d.delay_date).format("YYYY-MM-DD") === selectedDate);
                 let fine = 0;
@@ -94,7 +93,7 @@ const Davomat = () => {
                     />
                 </div>
             </div>
-            <Table dataSource={users} columns={columns} rowKey="_id" />
+            <Table dataSource={users.filter(u => !u.isSpecial)} columns={columns} rowKey="_id" />
         </div>
     );
 };

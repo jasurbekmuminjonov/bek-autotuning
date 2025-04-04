@@ -351,7 +351,7 @@ const Projects = () => {
   ];
 
   return (
-    <div className="manager_page">
+    <div className="manager_page" style={{ overflow: "auto" }}>
       <div className="project_stats">
         <div className="project_stat_card">
           <b>{projects.filter(p => p.status === "inprogress").length} ta</b>

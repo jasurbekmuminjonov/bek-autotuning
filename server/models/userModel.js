@@ -88,6 +88,10 @@ const userSchema = new mongoose.Schema({
         }],
         default: []
     },
+    isSpecial: {
+        type: Boolean,
+        default: false
+    },
     weekends: {
         type: [Date],
         default: []
