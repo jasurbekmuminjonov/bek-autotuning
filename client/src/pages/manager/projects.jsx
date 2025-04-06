@@ -259,7 +259,7 @@ const Projects = () => {
     {
       title: "Maosh turi",
       dataIndex: "salaryType",
-      render: (text) => text === "salary" ? "Maosh" : text === "percent" ? "Foiz" : "Nomalum"
+      render: (text) => text === "salary" ? "Maosh" : text === "percent" ? "Foiz" : text === "percent_with_profit" ? "% + foyda" : "Nomalum"
     },
     {
       title: "Maosh",

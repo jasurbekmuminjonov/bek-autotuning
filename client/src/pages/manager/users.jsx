@@ -7,10 +7,11 @@ import moment from 'moment';
 import { useForm, Controller } from 'react-hook-form';
 import dayjs from 'dayjs';
 import { TimePicker } from 'antd';
-import { useCreateUserMutation, useEditUserMutation, useGetUsersQuery, useLazyGetAllUserProjectsQuery, useLazyGetUserProjectsQuery, useRemoveWeekendMutation, useSetWeekendMutation } from '../../context/services/user.service';
+import { useCreateUserMutation, useEditUserMutation, useGetUsersQuery, useLazyGetAllUserProjectsQuery, useLazyGetUserProjectsQuery, usePauseUserMutation, useRemoveWeekendMutation, useResumeUserMutation, useSetWeekendMutation } from '../../context/services/user.service';
 import { useGetProjectsQuery } from '../../context/services/project.service';
 import axios from 'axios';
 import WeekendPopover from '../../components/weekend-popover/WeekendPopover';
+import PauseButton from '../../components/pause-button/PauseButton';
 
 const Users = () => {
     const { data: users = [] } = useGetUsersQuery()
@@ -30,6 +31,7 @@ const Users = () => {
     const [imageUrl, setImageUrl] = useState("");
     const [setWeekend] = useSetWeekendMutation()
     const [removeWeekend] = useRemoveWeekendMutation()
+
 
     const handleUpload = async (file) => {
         const formData = new FormData();
@@ -84,6 +86,7 @@ const Users = () => {
                         <FaImage />
                     </button>
                     <WeekendPopover record={record} setWeekend={setWeekend} removeWeekend={removeWeekend} />
+                    <PauseButton user={record} />
                 </div>
             )
         },

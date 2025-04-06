@@ -11,6 +11,8 @@ import { message, Modal, Popover, Table } from "antd";
 import { FaDollarSign, FaList } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { MdDeleteForever, MdEdit } from "react-icons/md";
+import { useGetProjectsQuery } from "../../context/services/project.service";
+import { useGetServiceQuery } from "../../context/services/service.service";
 
 const Salary = () => {
   const [filters, setFilters] = useState({
@@ -27,7 +29,8 @@ const Salary = () => {
   const { register, handleSubmit, reset } = useForm();
   const [totalSalaries, setTotalSalaries] = useState({});
   const [fetchApprovedProjects] = useLazyGetApprovedProjectsQuery();
-
+  const { data: projects = [] } = useGetProjectsQuery()
+  const { data: services = [] } = useGetServiceQuery()
   const { data: users = [] } = useGetUsersQuery();
   async function onSubmit(data) {
     try {
@@ -69,16 +72,18 @@ const Salary = () => {
     if (user.isSpecial) {
       return 0;
     }
+
     const workHours = moment(user.end_time, "HH:mm").diff(
       moment(user.start_time, "HH:mm"),
       "hours"
     );
-    const dailyPenalty = workHours * 10000;
 
     let totalPenalty = 0;
-    const today = moment().format("YYYY-MM-DD");
+    let lateOrAbsentCount = 0;
 
+    const today = moment().format("YYYY-MM-DD");
     const daysInMonth = moment(filters.month).daysInMonth();
+
     for (let day = 1; day <= daysInMonth; day++) {
       const date = moment(filters.month).date(day).format("YYYY-MM-DD");
 
@@ -86,25 +91,32 @@ const Salary = () => {
       if (moment(user.createdAt).isAfter(date, "day")) continue;
 
       const wasPresent = user.attendance.some((att) =>
-        moment(att.arrive_time).isSame(date, "day")
+        moment(att?.arrive_time).isSame(date, "day")
       );
       const isWeekend = user.weekends.some((weekend) =>
         moment(weekend).isSame(date, "day")
       );
 
       if (!wasPresent && !isWeekend) {
-        totalPenalty += dailyPenalty;
+        const rate = lateOrAbsentCount < 3 ? 10000 : 20000;
+        totalPenalty += workHours * rate;
+        lateOrAbsentCount++;
+      }
+
+      const delay = user.delays.find((d) =>
+        moment(d.delay_date).isSame(date, "day")
+      );
+
+      if (delay) {
+        const rate = lateOrAbsentCount < 3 ? 10000 : 20000;
+        totalPenalty += (delay.delay_minutes / 60) * rate;
+        lateOrAbsentCount++;
       }
     }
 
-    const delayPenalty = user.delays
-      .filter((delay) =>
-        moment(delay.delay_date).isSame(filters.month, "month")
-      )
-      .reduce((acc, delay) => acc + (delay.delay_minutes / 60) * 10000, 0);
-
-    return totalPenalty + delayPenalty;
+    return totalPenalty - 240000;
   };
+
 
   useEffect(() => {
     const calculateSalaries = async () => {
@@ -173,15 +185,16 @@ const Salary = () => {
         const today = moment().format("YYYY-MM-DD");
         const daysInMonth = moment(filters.month).daysInMonth();
 
+        let lateOrAbsentCount = 0;
+
         for (let day = 1; day <= daysInMonth; day++) {
           const date = moment(filters.month).date(day).format("YYYY-MM-DD");
 
           if (date >= today) continue;
           if (moment(record.createdAt).isAfter(date, "day")) continue;
 
-
           const attendance = record.attendance.find((att) =>
-            moment(att.arrive_time).isSame(date, "day")
+            moment(att?.arrive_time).isSame(date, "day")
           );
           const delay = record.delays.find((del) =>
             moment(del.delay_date).isSame(date, "day")
@@ -195,27 +208,39 @@ const Salary = () => {
               moment(record.start_time, "HH:mm"),
               "hours"
             );
-            const fine = workHours * 10000;
+
+            const fineAmount = lateOrAbsentCount < 3
+              ? workHours * 10000
+              : workHours * 20000;
 
             penalties.push({
               date,
               arrive_time: "-",
               leave_time: "-",
               delay_hours: "Ha",
-              fine: fine.toLocaleString() + " UZS",
+              fine: fineAmount,
             });
+
+            lateOrAbsentCount++;
           }
 
           if (delay) {
+            const fineAmount = lateOrAbsentCount < 3
+              ? (delay.delay_minutes / 60) * 10000
+              : (delay.delay_minutes / 60) * 20000;
+
             penalties.push({
               date,
-              arrive_time: attendance.arrive_time ? moment(attendance.arrive_time).format("HH:mm") : "-",
-              leave_time: attendance.leave_time ? moment(attendance.leave_time).format("HH:mm") : "-",
+              arrive_time: attendance?.arrive_time ? moment(attendance?.arrive_time).format("HH:mm") : "-",
+              leave_time: attendance?.leave_time ? moment(attendance?.leave_time).format("HH:mm") : "-",
               delay_hours: (delay.delay_minutes / 60).toFixed(2) + " soat",
-              fine: ((delay.delay_minutes / 60) * 10000).toLocaleString() + " UZS",
+              fine: fineAmount,
             });
+
+            lateOrAbsentCount++;
           }
         }
+        console.log(penalties);
 
         return (
           <Popover
@@ -230,17 +255,52 @@ const Salary = () => {
                   { title: "Kelgan vaqti", dataIndex: "arrive_time", key: "arrive_time" },
                   { title: "Ketgan vaqti", dataIndex: "leave_time", key: "leave_time" },
                   { title: "Kech qolgan", dataIndex: "delay_hours", key: "delay_hours" },
-                  { title: "Jarima summasi", dataIndex: "fine", key: "fine" },
+                  { title: "Jarima summasi", dataIndex: "fine", key: "fine", render: (text) => Number(text.toFixed()).toLocaleString() + " UZS" },
                 ]}
               />
             }
           >
-            <span style={penalties.reduce((acc, p) => acc + parseInt(p.fine.replace(/\D/g, "")), 0) > 0 ? { padding: "6px", cursor: "pointer", background: "red", color: "#fff" } : { padding: "6px", cursor: "pointer", background: "green", color: "#fff" }}>
-              {penalties.reduce((acc, p) => acc + parseInt(p.fine.replace(/\D/g, "")), 0).toLocaleString() + " UZS"}
+            <span style={penalties.reduce((acc, p) => acc + p.fine, 0) - 240000 > 0
+              ? { padding: "6px", cursor: "pointer", background: "red", color: "#fff" }
+              : { padding: "6px", cursor: "pointer", background: "green", color: "#fff" }}>
+              {Number((penalties.reduce((acc, p) => acc + p.fine, 0) - 240000).toFixed()) < 0 ? 0 + " UZS" : Number((penalties.reduce((acc, p) => acc + p.fine, 0) - 240000).toFixed()).toLocaleString() + " UZS"}
             </span>
-          </Popover >
+          </Popover>
         );
       },
+    },
+    {
+      title: "Sanaga kech qolishlar",
+      render: (_, record) => {
+        const filteredServiceDelays = record.service_delays.filter(d => moment(d.delay_date).format("YYYY-MM") === filters.month)
+        return (
+          <Popover trigger="click" title="Sanaga kech qolishlar" placement="bottom" content={
+            <Table columns={[
+              {
+                title: "Mashina",
+                dataIndex: "project_id",
+                render: (text) => projects.find(p => p._id === text).car_name + " - " + projects.find(p => p._id === text).car_number
+              },
+              {
+                title: "Servis",
+                render: (_, record) => services.find(s => s._id === projects.find(p => p._id === record.project_id).services_providing.find(p => p._id === record.service_id).service_id).service_name
+              },
+              {
+                title: "Kech qolish kunlari",
+                dataIndex: "delay_days"
+              },
+              {
+                title: "Jarima summasi",
+                dataIndex: "delay_days",
+                render: (text) => (text * 100000).toLocaleString() + " UZS"
+              }
+            ]} dataSource={filteredServiceDelays} />
+          }>
+            <span>{filteredServiceDelays.reduce((acc, d) => acc + d.delay_days * 100000, 0).toLocaleString() + " UZS"}</span>
+          </Popover>
+        )
+      },
+      key: "_id"
     },
     {
       title: "Qolgan oylik",
@@ -337,6 +397,8 @@ const Salary = () => {
       ),
     },
   ];
+
+
   return (
     <div className="manager_page">
       <Modal

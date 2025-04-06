@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -95,8 +94,25 @@ const userSchema = new mongoose.Schema({
     weekends: {
         type: [Date],
         default: []
+    },
+    service_delays: {
+        type: [{
+            delay_days: Number,
+            project_id: String,
+            service_id: String,
+            delay_date: Date
+        }],
+        default: []
+    },
+    pause_log: {
+        type: [{
+            pause_start: String,
+            pause_end: String,
+            scheduled_time: String,
+            delay_minutes: Number
+        }],
+        default: []
     }
 
 }, { timestamps: true });
-
 module.exports = mongoose.model('user', userSchema);

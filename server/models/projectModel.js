@@ -237,7 +237,7 @@ const projectSchema = new mongoose.Schema({
         ],
         default: []
     },
-    admin_id: { // admin ID
+    admin_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'admin',
         required: true

@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const Project = require("../models/projectModel");
+const moment = require('moment');
 const bcrypt = require("bcryptjs");
 exports.getUsers = async (req, res) => {
   try {
@@ -186,10 +187,10 @@ exports.startProject = async (req, res) => {
         service._id.toString() === service_id
       ) {
         service.status = "inprogress";
-        service.started_time = new Date().toISOString();
+        service.started_time = new Date(new Date().getTime() + 18000000).toISOString();
       }
     });
-    project.createdAt = new Date(new Date().getTime() + 18000000).toISOString();
+    project.createdAt = new Date(new Date(new Date().getTime() + 18000000).getTime() + 18000000).toISOString();
     await project.save();
     res.json({ message: "Mashina servisi jarayonda" });
   } catch (err) {
@@ -201,6 +202,9 @@ exports.finishService = async (req, res) => {
   try {
     const { project_id, service_id } = req.params;
     const { user_id, admin_id } = req.user;
+    const end_time = new Date(new Date().getTime() + 18000000).toISOString()
+    const user = await User.findById(user_id);
+    let lateDiff;
     const project = await Project.findOne({
       admin_id,
       _id: project_id,
@@ -219,10 +223,30 @@ exports.finishService = async (req, res) => {
         service._id.toString() === service_id
       ) {
         service.status = "finished";
-        service.ended_time = new Date().toISOString();
+        service.ended_time = Date.now();
+        lateDiff = moment(end_time).diff(moment(service.end_time), "days")
+      }
+      if (lateDiff > 0) {
+
+        if (service._id.toString() !== service_id) {
+          service.start_time = moment(service.start_time).add(lateDiff, 'days').toISOString()
+          service.end_time = moment(service.end_time).add(lateDiff, 'days').toISOString()
+        }
       }
     });
+    if (lateDiff > 0) {
+
+      project.leave_date = moment(project.leave_date).add(lateDiff, 'days').toISOString()
+      user.service_delays.push({
+        delay_days: lateDiff,
+        service_id,
+        project_id,
+        delay_date: project.services_providing.find(s => s._id.toString() === service_id).started_time
+      })
+    }
+
     await project.save();
+    await user.save();
     res.json({ message: "Mashina servisi tugallandi" });
   } catch (err) {
     console.log(err.message);
@@ -268,11 +292,11 @@ exports.approveService = async (req, res) => {
     }
 
     prev_service.status = "approved";
-    prev_service.approved_time = new Date().toISOString();
+    prev_service.approved_time = new Date(new Date().getTime() + 18000000).toISOString();
     const user = await User.findById(prev_service.user_id);
     user.balance += prev_service.user_salary_amount.amount;
     user_service.status = "inprogress";
-    user_service.started_time = new Date().toISOString();
+    user_service.started_time = new Date(new Date().getTime() + 18000000).toISOString();
     await project.save();
     await user.save();
     res.json({
@@ -319,7 +343,7 @@ exports.rejectService = async (req, res) => {
         });
     }
     prev_service.status = "rejected";
-    prev_service.rejected_time = new Date().toISOString();
+    prev_service.rejected_time = new Date(new Date().getTime() + 18000000).toISOString();
 
     await project.save();
     res.json({ message: "Loyiha muvaffaqiyatli rad etildi" });
@@ -413,6 +437,64 @@ exports.removeWeekend = async (req, res) => {
 
   } catch (err) {
     console.log(err.message)
+    return res.status(500).json({ message: "Serverda xatolik" });
+  }
+}
+
+exports.pauseUser = async (req, res) => {
+  try {
+    const { pause_start, scheduled_time } = req.body
+    const { user_id } = req.params
+    const user = await User.findById(user_id)
+    user.pause_log.push({
+      pause_start,
+      scheduled_time,
+      end_time: null,
+      delay_minutes: 0
+    })
+    await user.save()
+    return res.json({ message: "Pauza" })
+  } catch (err) {
+    console.log(err.message)
+    return res.status(500).json({ message: "Serverda xatolik" });
+  }
+}
+
+exports.resumeUser = async (req, res) => {
+  try {
+    const { user_id, pause_id } = req.params;
+    const { pause_end } = req.body;
+
+    const user = await User.findById(user_id);
+    const formattedDate = moment().format("DD.MM.YYYY");
+    const pause = user.pause_log.id(pause_id);
+
+    const currentDate = moment().format("YYYY-MM-DD");
+    const pauseEndTime = moment(`${currentDate} ${pause_end}`, "YYYY-MM-DD HH:mm");
+    const pauseScheduledTime = moment(`${currentDate} ${pause.scheduled_time}`, "YYYY-MM-DD HH:mm");
+
+    const diff = pauseEndTime.diff(pauseScheduledTime, 'minutes');
+    pause.pause_end = pause_end;
+    pause.delay_minutes = diff;
+
+    if (diff > 10) {
+      const currentDelay = user.delays.find(d => moment(d).format("DD.MM.YYYY") === formattedDate)
+      if (currentDelay) {
+        currentDelay.delay_minutes += diff;
+      } else {
+        user.delays.push({
+          delay_minutes: diff,
+          delay_date: new Date(new Date().getTime() + 18000000).toISOString(),
+        });
+      }
+    }
+
+    await user.save();
+
+    return res.json({ message: "Pauza to'xtatildi" });
+
+  } catch (err) {
+    console.log(err.message);
     return res.status(500).json({ message: "Serverda xatolik" });
   }
 }

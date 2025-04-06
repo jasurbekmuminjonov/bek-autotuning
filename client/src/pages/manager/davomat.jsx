@@ -54,31 +54,82 @@ const Davomat = () => {
         {
             title: "Jarima",
             render: (_, record) => {
-                const today = moment().format("YYYY-MM-DD");
-                const isPast = moment(selectedDate).isBefore(today, "day");
-                const isWeekend = record.weekends.some(t => moment(t).format("YYYY-MM-DD") === selectedDate);
-                if (moment(record.createdAt).isAfter(selectedDate, "day")) {
-                    return (<span style={{ padding: "6px", background: "green", color: "#fff" }}>{"0 UZS"}</span>);
+              const today = moment().format("YYYY-MM-DD");
+              const isPast = moment(selectedDate).isBefore(today, "day");
+              const isWeekend = record.weekends.some(t =>
+                moment(t).format("YYYY-MM-DD") === selectedDate
+              );
+          
+              if (moment(record.createdAt).isAfter(selectedDate, "day") || !isPast || isWeekend) {
+                return (
+                  <span style={{ padding: "6px", background: "green", color: "#fff" }}>
+                    {"0 UZS"}
+                  </span>
+                );
+              }
+          
+              const attendance = record.attendance.find(a =>
+                moment(a.arrive_time).format("YYYY-MM-DD") === selectedDate
+              );
+              const delay = record.delays.find(d =>
+                moment(d.delay_date).format("YYYY-MM-DD") === selectedDate
+              );
+          
+              // KECHIKISH VA KELMASLIKLARNI sanaganimizda, faqat selectedDate'ga qadar hisoblanadi
+              let lateOrAbsentCount = 0;
+          
+              const currentDate = moment(selectedDate);
+              const monthStart = moment(selectedDate).startOf("month");
+              const dayCount = currentDate.date();
+          
+              for (let i = 1; i < dayCount; i++) {
+                const date = monthStart.clone().date(i).format("YYYY-MM-DD");
+          
+                if (date >= today) continue;
+                if (moment(record.createdAt).isAfter(date, "day")) continue;
+          
+                const wasPresent = record.attendance.some(att =>
+                  moment(att.arrive_time).format("YYYY-MM-DD") === date
+                );
+                const wasDelayed = record.delays.some(d =>
+                  moment(d.delay_date).format("YYYY-MM-DD") === date
+                );
+                const wasWeekend = record.weekends.some(w =>
+                  moment(w).format("YYYY-MM-DD") === date
+                );
+          
+                if (!wasWeekend && (!wasPresent || wasDelayed)) {
+                  lateOrAbsentCount++;
                 }
-                if (!isPast || isWeekend) {
-                    return (<span style={{ padding: "6px", background: "green", color: "#fff" }}>{"0 UZS"}</span>);
-                }
-                const attendance = record.attendance.find(a => moment(a.arrive_time).format("YYYY-MM-DD") === selectedDate);
-                const delay = record.delays.find(d => moment(d.delay_date).format("YYYY-MM-DD") === selectedDate);
-                let fine = 0;
-                if (attendance) {
-                    fine = delay ? (delay.delay_minutes / 60) * 10000 : 0;
-                } else {
-                    const workHours = moment(record.end_time, "HH:mm").diff(
-                        moment(record.start_time, "HH:mm"),
-                        "hours"
-                    );
-                    fine = workHours * 10000;
-                }
-                return (<span style={{ padding: "6px", background: "red", color: "#fff" }}>{fine.toLocaleString() + " UZS"}</span>);
+              }
+          
+              let fine = 0;
+              const rate = lateOrAbsentCount < 3 ? 10000 : 20000;
+              if (attendance) {
+                fine = delay ? (delay.delay_minutes / 60) * rate : 0;
+              } else {
+                const workHours = moment(record.end_time, "HH:mm").diff(
+                  moment(record.start_time, "HH:mm"),
+                  "hours"
+                );
+                fine = workHours * rate;
+              }
+              if (fine === 0) {
+                return (
+                  <span style={{ padding: "6px", background: "green", color: "#fff" }}>
+                    {"0 UZS"}
+                  </span>
+                );
+              }
+          
+              return (
+                <span style={{ padding: "6px", background: "red", color: "#fff" }}>
+                  {fine.toLocaleString() + " UZS"}
+                </span>
+              );
             },
             key: "_id"
-        }
+          }
     ];
 
     return (
