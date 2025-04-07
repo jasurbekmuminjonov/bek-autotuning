@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useGetProjectsQuery } from '../../context/services/project.service';
-import { useGetUsersQuery } from '../../context/services/user.service';
+// import { useGetUsersQuery } from '../../context/services/user.service';
 import TotalAmountPaidChart from '../../components/chart/totalAmountPaidChart';
 import NetProfitChart from '../../components/chart/netProfitChart';
 import income from '../../assets/income.png'
-import outgoing from '../../assets/outgoing.png'
+// import outgoing from '../../assets/outgoing.png'
 import { FaDoorOpen } from "react-icons/fa";
 
 const AdminLayout = () => {
     const { data: projects = [] } = useGetProjectsQuery()
-    const { data: users = [] } = useGetUsersQuery()
+    // const { data: users = [] } = useGetUsersQuery()
     const [selectedCurrency, setSelectedCurrency] = useState("UZS")
 
     return (
@@ -22,17 +22,22 @@ const AdminLayout = () => {
                     <b>{Number(projects.filter(p => p.currency === selectedCurrency).reduce((acc, item) => acc + item.total_amount_paid, 0).toFixed()).toLocaleString()} {selectedCurrency}</b>
                     <p>Umumiy kirim({selectedCurrency})</p>
                 </div>
+                <div className="card">
+                    <img src={income} alt="" />
+                    <b>{Number(projects.filter(p => p.currency === selectedCurrency).reduce((acc, item) => acc + item.net_profit, 0).toFixed()).toLocaleString()} {selectedCurrency}</b>
+                    <p>Sof foyda({selectedCurrency})</p>
+                </div>
                 {/* <div className="card">
                     <img src={income} alt="" />
 
                     <b>{projects.filter(p => p.currency === "USD").reduce((acc, item) => acc + item.total_amount_paid, 0).toLocaleString()} USD</b>
                     <p>Umumiy kirim(USD)</p>
                 </div> */}
-                <div className="card">
+                {/* <div className="card">
                     <img src={outgoing} alt="" />
                     <b>{Number(projects.filter(p => p.currency === selectedCurrency).reduce((acc, item) => acc + item.total_spending_amount, 0).toFixed()).toLocaleString()} {selectedCurrency}</b>
                     <p>Umumiy xarajat({selectedCurrency})</p>
-                </div>
+                </div> */}
                 {/* <div className="card">
                     <img src={outgoing} alt="" />
                     <b>{projects.filter(p => p.currency === "USD").reduce((acc, item) => acc + item.total_spending_amount, 0).toLocaleString()} USD</b>

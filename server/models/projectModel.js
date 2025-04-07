@@ -55,10 +55,10 @@ const projectSchema = new mongoose.Schema({
                     ref: 'user',
                     required: true
                 },
-                salaryType: {
-                    type: String,
-                    enum: ["percent", "salary", "percent_with_profit"]
-                },
+                // salaryType: {
+                //     type: String,
+                //     enum: ["percent", "salary", "percent_with_profit"]
+                // },
                 net_profit: {
                     type: {
                         amount: {
@@ -72,20 +72,20 @@ const projectSchema = new mongoose.Schema({
                         }
                     }
                 },
-                extra_profit: {
-                    type: {
-                        amount: {
-                            type: Number,
-                            default: 0
-                        },
-                        currency: {
-                            type: String,
-                            enum: ['USD', 'UZS'],
-                            default: 'UZS'
-                        }
-                    },
-                    required: true
-                },
+                // extra_profit: {
+                //     type: {
+                //         amount: {
+                //             type: Number,
+                //             default: 0
+                //         },
+                //         currency: {
+                //             type: String,
+                //             enum: ['USD', 'UZS'],
+                //             default: 'UZS'
+                //         }
+                //     },
+                //     required: true
+                // },
                 amount_to_paid: {  // xizmat narxi
                     type: {
                         amount: {
@@ -114,32 +114,32 @@ const projectSchema = new mongoose.Schema({
                     },
                     required: true
                 },
-                spendings: {  // umumiy harajatlar
-                    type: [
-                        {
-                            amount: {  // harajat miqdori
-                                type: {
-                                    amount: {
-                                        type: Number,
-                                        default: null
-                                    },
-                                    currency: {
-                                        type: String,
-                                        enum: ['USD', 'UZS'],
-                                        default: 'UZS'
-                                    }
-                                },
-                                required: true
-                            },
-                            description: { // harajat tavsifi
-                                type: String,
-                                required: true
-                            }
-                        }
-                    ],
-                    default: [],
-                    required: true
-                },
+                // spendings: {  // umumiy harajatlar
+                //     type: [
+                //         {
+                //             amount: {  // harajat miqdori
+                //                 type: {
+                //                     amount: {
+                //                         type: Number,
+                //                         default: null
+                //                     },
+                //                     currency: {
+                //                         type: String,
+                //                         enum: ['USD', 'UZS'],
+                //                         default: 'UZS'
+                //                     }
+                //                 },
+                //                 required: true
+                //             },
+                //             description: { // harajat tavsifi
+                //                 type: String,
+                //                 required: true
+                //             }
+                //         }
+                //     ],
+                //     default: [],
+                //     required: true
+                // },
                 service_id: {  // xizmat id si
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'service',
@@ -199,11 +199,15 @@ const projectSchema = new mongoose.Schema({
         enum: ['inprogress', 'finished'],
         default: 'inprogress'
     },
-    total_amount_to_paid: { // umumiy to'lanishi kerak bo'lgan summa
+    total_profit: {
         type: Number,
-        default: null
+        required: true
     },
-    total_spending_amount: { // umumiy sarflangan summa
+    net_profit: {
+        type: Number,
+        required: true
+    },
+    total_amount_to_paid: { // umumiy to'lanishi kerak bo'lgan summa
         type: Number,
         default: null
     },
@@ -211,6 +215,10 @@ const projectSchema = new mongoose.Schema({
         type: Number,
         default: null
     },
+    // total_spending_amount: { // umumiy sarflangan summa
+    //     type: Number,
+    //     default: null
+    // },
     total_amount_paid: { // jami to'langan summa
         type: Number,
         default: 0

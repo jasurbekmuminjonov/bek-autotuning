@@ -28,7 +28,8 @@ const NetProfitChart = ({ projects }) => {
             {
                 label: "Sof foyda summasi",
                 data: projects.map((project) =>
-                    project.services_providing.reduce((total, service) => total + (service.net_profit?.amount || 0), 0)
+                    // project.services_providing.reduce((total, service) => total + (service.net_profit?.amount || 0), 0)
+                    project.net_profit || 0
                 ),
                 borderColor: "#1677FF",
                 backgroundColor: "#1677FF",
@@ -65,7 +66,7 @@ const NetProfitChart = ({ projects }) => {
         },
     };
 
-    return <Line  style={{ border: "1px solid #ccc" }} data={chartData} options={options} />;
+    return <Line style={{ border: "1px solid #ccc" }} data={chartData} options={options} />;
 };
 
 export default NetProfitChart;

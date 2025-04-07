@@ -21,7 +21,7 @@ const AddProject = () => {
     const [rightImage, setRightImage] = useState("")
     const [leftImage, setLeftImage] = useState("")
     const { register, handleSubmit, reset, formState: { errors }, control, watch } = useForm()
-    const [salaryType, setSalaryType] = useState("salary")
+    // const [salaryType, setSalaryType] = useState("salary")
     const isFree = watch("isFree", false);
     const { fields, append, remove } = useFieldArray({
         control,
@@ -41,7 +41,7 @@ const AddProject = () => {
                         end_time: service.end_time ? new Date(service.end_time).toISOString().split('T')[0] : "",
                     })) || []
                 });
-                setSalaryType(project.salaryType)
+                // setSalaryType(project.salaryType)
                 setFrontImage(project.front_image)
                 setBackImage(project.back_image)
                 setRightImage(project.right_image)
@@ -59,27 +59,28 @@ const AddProject = () => {
                 back_image: backImage,
                 right_image: rightImage,
                 left_image: leftImage,
+                total_profit: Number(data.total_profit),
                 services_providing: data.services_providing.map(service => ({
                     ...service,
                     amount_to_paid: {
                         ...service.amount_to_paid,
                         amount: Number(service.amount_to_paid.amount),
                     },
-                    extra_profit: {
-                        ...service.extra_profit,
-                        amount: Number(service.extra_profit.amount),
-                    },
-                    user_salary_amount: {
-                        ...service.user_salary_amount,
-                        amount: Number(service.user_salary_amount.amount),
-                    },
-                    spendings: service.spendings.map(spending => ({
-                        ...spending,
-                        amount: {
-                            ...spending.amount,
-                            amount: Number(spending.amount.amount),
-                        }
-                    }))
+                    // extra_profit: {
+                    //     ...service.extra_profit,
+                    //     amount: Number(service.extra_profit.amount),
+                    // },
+                    // user_salary_amount: {
+                    //     ...service.user_salary_amount,
+                    //     amount: Number(service.user_salary_amount.amount),
+                    // },
+                    // spendings: service.spendings.map(spending => ({
+                    //     ...spending,
+                    //     amount: {
+                    //         ...spending.amount,
+                    //         amount: Number(spending.amount.amount),
+                    //     }
+                    // }))
                 }))
             };
 
@@ -178,6 +179,14 @@ const AddProject = () => {
                             }}  {...register("car_id", { required: "Mashina ID sini kiriting" })} type="text" id="car_id" />
                         </label>
 
+                        <label htmlFor="total_profit">
+                            <p>
+                                <FaStarOfLife size={8} />
+                                Kelishuv summasi
+                            </p>
+                            <input type="number" id="total_profit" {...register("total_profit", { required: "Kelishuv summasini kiriting" })} />
+                            {errors.total_profit && <span>{errors.total_profit}</span>}
+                        </label>
                         <label htmlFor="currency">
                             <p>
                                 <FaStarOfLife size={8} />
@@ -198,7 +207,6 @@ const AddProject = () => {
                             <p>Bepul</p>
                             <input style={{ width: "20px" }} type="checkbox" {...register("isFree")} id="isFree" />
                         </label>
-
                     </div>
                     <div className="form_part" style={{ flexGrow: 1, flexDirection: "row", flexWrap: "wrap" }}>
                         <label htmlFor="front_image" style={{ width: "250px" }}>
@@ -316,7 +324,7 @@ const AddProject = () => {
                                         <option value="USD">USD</option>
                                     </select>
                                 </label>
-                                <label htmlFor="salaryType">
+                                {/* <label htmlFor="salaryType">
                                     <p>Maosh turi</p>
                                     <select disabled={isFree} onChange={(e) => {
                                         setSalaryType(e.target.value);
@@ -325,8 +333,8 @@ const AddProject = () => {
                                         <option value="percent">Foiz</option>
                                         <option value="percent_with_profit">Foiz + alohida foyda</option>
                                     </select>
-                                </label>
-                                <label>
+                                </label> */}
+                                {/* <label>
                                     Ishchining maoshi:
                                     <input disabled={watch("isFree") || watch(`services_providing.${index}.salaryType`) !== "salary"} {...register(`services_providing.${index}.user_salary_amount.amount`)} type="number" onWheel={(e) => {
                                         e.preventDefault();
@@ -341,7 +349,7 @@ const AddProject = () => {
                                         <option value="UZS">UZS</option>
                                         <option value="USD">USD</option>
                                     </select>
-                                </label>
+                                </label> */}
                                 <label>
                                     Boshlash sanasi:
                                     <input {...register(`services_providing.${index}.start_time`)} type="date" />
@@ -350,11 +358,11 @@ const AddProject = () => {
                                     Tugash sanasi:
                                     <input {...register(`services_providing.${index}.end_time`)} type="date" />
                                 </label>
-                                <h4>Harajatlar</h4>
-                                <SpendingsFieldArray control={control} parentIndex={index} register={register} />
+                                {/* <h4>Harajatlar</h4> */}
+                                {/* <SpendingsFieldArray control={control} parentIndex={index} register={register} /> */}
                                 <label>
                                     Tartib raqami:
-                                    <input {...register(`services_providing.${index}.index`)} type="number" onWheel={(e) => {
+                                    <input disabled {...register(`services_providing.${index}.index`)} type="number" onWheel={(e) => {
                                         e.preventDefault();
                                     }} defaultValue={index + 1} />
                                 </label>
@@ -367,8 +375,6 @@ const AddProject = () => {
                                 append({
                                     user_id: "",
                                     amount_to_paid: { amount: null, currency: "UZS" },
-                                    user_salary_amount: { amount: null, currency: "UZS" },
-                                    spendings: [],
                                     service_id: "",
                                     start_time: "",
                                     end_time: "",
@@ -387,39 +393,39 @@ const AddProject = () => {
     );
 };
 
-const SpendingsFieldArray = ({ control, parentIndex, register }) => {
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: `services_providing.${parentIndex}.spendings`,
-    });
+// const SpendingsFieldArray = ({ control, parentIndex, register }) => {
+//     const { fields, append, remove } = useFieldArray({
+//         control,
+//         name: `services_providing.${parentIndex}.spendings`,
+//     });
 
-    return (
-        <>
-            {fields.map((item, index) => (
-                <div className='spending' key={item.id}>
-                    <label>
-                        Harajat miqdori:
-                        <input {...register(`services_providing.${parentIndex}.spendings.${index}.amount.amount`)} type="number" onWheel={(e) => {
-                            e.preventDefault();
-                        }} />
-                        <select {...register(`services_providing.${parentIndex}.spendings.${index}.amount.currency`)}>
-                            <option value="UZS">UZS</option>
-                            <option value="USD">USD</option>
-                        </select>
-                    </label>
+//     return (
+//         <>
+//             {fields.map((item, index) => (
+//                 <div className='spending' key={item.id}>
+//                     <label>
+//                         Harajat miqdori:
+//                         <input {...register(`services_providing.${parentIndex}.spendings.${index}.amount.amount`)} type="number" onWheel={(e) => {
+//                             e.preventDefault();
+//                         }} />
+//                         <select {...register(`services_providing.${parentIndex}.spendings.${index}.amount.currency`)}>
+//                             <option value="UZS">UZS</option>
+//                             <option value="USD">USD</option>
+//                         </select>
+//                     </label>
 
-                    <label>
-                        Tavsif:
-                        <input {...register(`services_providing.${parentIndex}.spendings.${index}.description`)} type="text" />
-                    </label>
+//                     <label>
+//                         Tavsif:
+//                         <input {...register(`services_providing.${parentIndex}.spendings.${index}.description`)} type="text" />
+//                     </label>
 
-                    <button style={{ border: "1px solid red", color: "red", background: "transparent" }} type="button" onClick={() => remove(index)}>Harajatni o'chirish</button>
-                </div>
-            ))}
+//                     <button style={{ border: "1px solid red", color: "red", background: "transparent" }} type="button" onClick={() => remove(index)}>Harajatni o'chirish</button>
+//                 </div>
+//             ))}
 
-            <button type="button" onClick={() => append({ amount: { amount: null, currency: "UZS" }, description: "" })}>Harajat qo'shish</button>
-        </>
-    );
-};
+//             <button type="button" onClick={() => append({ amount: { amount: null, currency: "UZS" }, description: "" })}>Harajat qo'shish</button>
+//         </>
+//     );
+// };
 
 export default AddProject;
