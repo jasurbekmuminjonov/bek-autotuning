@@ -3,7 +3,7 @@ const { createAdmin, createManager, createUser } = require('./controllers/adminC
 const auth = require('./middlewares/auth');
 const { login } = require('./controllers/authController');
 const { createService, getService, updateService, deleteService } = require('./controllers/serviceController');
-const { getProject, createProject, updateProject, deleteProject, finishProject, getProjectByUser, getAllProjectByUser, createPayment, pauseToggle } = require('./controllers/projectController');
+const { getProject, createProject, updateProject, deleteProject, finishProject, getProjectByUser, getAllProjectByUser, createPayment, pauseToggle, createSpending } = require('./controllers/projectController');
 const { getUsers, getUser, getProjectsByUser, getProjectsForApprove, getProjectsForFinish, approveService, finishService, rejectService, getBalance, editUser, getProjectsForStart, startProject, getApprovedProjects, payUser, updateSalary, deleteSalary, setWeekend, removeWeekend, pauseUser, resumeUser } = require('./controllers/userController');
 const { createExpense, getExpense, updateExpense, deleteExpense } = require('./controllers/expenseController');
 const { recordAttendance } = require('./controllers/attendanceController');
@@ -31,6 +31,7 @@ rt.post("/project/create", auth, createProject) //create project
 rt.put("/project/update/:id", auth, updateProject) //update project
 rt.delete("/project/delete/:id", auth, deleteProject) //delete project
 rt.put("/project/finish/:project_id", auth, finishProject) //finish project
+rt.put("/project/spending/:project_id", auth, createSpending)
 rt.put("/project/service/finish/:project_id/:service_id", auth, finishService) //finish service
 rt.put("/project/service/pause/:project_id/:service_id", auth, pauseToggle) //pause service
 rt.put("/project/service/approve/", auth, approveService) //approve service

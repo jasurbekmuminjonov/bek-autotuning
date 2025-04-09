@@ -63,8 +63,9 @@ const AddProject = () => {
                 services_providing: data.services_providing.map(service => ({
                     ...service,
                     amount_to_paid: {
-                        ...service.amount_to_paid,
+                        // ...service.amount_to_paid,
                         amount: Number(service.amount_to_paid.amount),
+                        currency: data.currency
                     },
                     // extra_profit: {
                     //     ...service.extra_profit,
@@ -345,7 +346,7 @@ const AddProject = () => {
                                     <input
                                         disabled={isFree}
                                         {...register(`services_providing.${index}.amount_to_paid.amount`, {
-                                            required: isFree ? false : "Servis narxini kiriting", 
+                                            required: isFree ? false : "Servis narxini kiriting",
                                         })}
                                         type="number"
                                         onWheel={(e) => {
@@ -358,7 +359,7 @@ const AddProject = () => {
                                         </span>
                                     )}
 
-                                    <select
+                                    {/* <select
                                         disabled={isFree}
                                         {...register(`services_providing.${index}.amount_to_paid.currency`, {
                                             required: "Servis narxining valyutasini kiriting",
@@ -371,7 +372,7 @@ const AddProject = () => {
                                         <span style={{ color: "red" }}>
                                             {errors.services_providing[index].amount_to_paid.currency.message}
                                         </span>
-                                    )}
+                                    )} */}
                                 </label>
 
                                 {/* <label htmlFor="salaryType">

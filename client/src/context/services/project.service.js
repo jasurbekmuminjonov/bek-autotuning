@@ -44,6 +44,14 @@ export const projectApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Project"],
     }),
+    createSpending: builder.mutation({
+      query: ({ body, project_id }) => ({
+        url: `/project/spending/${project_id}`,
+        method: "PUT",
+        body: body,
+      }),
+      invalidatesTags: ["Project"],
+    }),
 
     deleteProject: builder.mutation({
       query: (project_id) => ({
@@ -107,5 +115,6 @@ export const {
   useStartProjectMutation,
   useRejectProjectMutation,
   useFinishServiceMutation,
-  usePauseServiceMutation
+  usePauseServiceMutation,
+  useCreateSpendingMutation
 } = projectApi;

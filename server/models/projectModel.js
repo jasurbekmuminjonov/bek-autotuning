@@ -190,6 +190,15 @@ const projectSchema = new mongoose.Schema({
         default: [],
         required: true
     },
+    spendings: {
+        type: [
+            {
+                amount: Number,
+                description: String
+            }
+        ],
+        default: []
+    },
     leave_date: {
         type: Date,
         required: true

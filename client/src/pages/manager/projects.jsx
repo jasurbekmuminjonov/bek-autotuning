@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import {
+  useCreateSpendingMutation,
   useDeleteProjectMutation,
   useFinishProjectMutation,
   useGetProjectsQuery,
@@ -9,7 +10,7 @@ import {
 import { RiFilterLine } from "react-icons/ri";
 import { BiSearchAlt2 } from "react-icons/bi";
 import { message, Modal, Popconfirm, Popover, Table } from "antd";
-import { FaCheck, FaDollarSign, FaImage, FaList, FaMinus, FaPause, FaPlay } from "react-icons/fa";
+import { FaCheck, FaDollarSign, FaImage, FaList, FaMinus, FaPause, FaPlay, FaPlus } from "react-icons/fa";
 import { useGetServiceQuery } from "../../context/services/service.service";
 import moment from "moment";
 import { useGetUsersQuery } from "../../context/services/user.service";
@@ -28,6 +29,9 @@ const Projects = () => {
   const { data: users = [] } = useGetUsersQuery();
   const { data: services = [] } = useGetServiceQuery();
   const [payProject] = usePayProjectMutation();
+  const [createSpending] = useCreateSpendingMutation();
+  const [spendingProject, setSpendingProject] = useState("")
+  const [spendingModal, setSpendingModal] = useState(false)
   const [open, setOpen] = useState(false);
   const [payingProject, setPayingProject] = useState("");
   const navigate = useNavigate();
@@ -87,10 +91,18 @@ const Projects = () => {
       render: (text) => text ? "Ha" : "Yo'q"
     },
     {
-      title: "Jami xarajat",
-      dataIndex: "total_spending_amount",
+      title: "Qoldiq pul",
       key: "_id",
-      render: (text) => text?.toLocaleString(),
+      render: (_, record) => record.total_profit - record.services_providing.reduce((acc, s) => acc + s.amount_to_paid.amount, 0) - record.spendings.reduce((acc, s) => acc + s.amount, 0),
+    },
+    {
+      title: "Sof foyda",
+      key: "_id",
+      render: (_, record) => record.services_providing.reduce((acc, s) => acc + s.net_profit.amount, 0),
+    },
+    {
+      title: "Jami foyda",
+      render: (_, record) => record.total_profit - record.services_providing.reduce((acc, s) => acc + s.amount_to_paid.amount, 0) - record.spendings.reduce((acc, s) => acc + s.amount, 0) + record.services_providing.reduce((acc, s) => acc + s.net_profit.amount, 0)
     },
     {
       title: "Jami to'lov",
@@ -164,6 +176,21 @@ const Projects = () => {
           </Popover>
         </div>
       ),
+    },
+    {
+      title: "Xarajat",
+      render: (_, record) => (
+        <div className="table_actions">
+          <button onClick={() => { setSpendingProject(record._id); setSpendingModal(true) }}>
+            <FaPlus />
+          </button>
+          <Popover placement="bottom" trigger="click" title="Barcha xarajatlar" content={<Table dataSource={record.spendings} columns={[{ title: "Summa", dataIndex: "amount" }, { title: "Tavsif", dataIndex: "description" }]} />}>
+            <button>
+              <FaList />
+            </button>
+          </Popover>
+        </div>
+      )
     },
     {
       title: "Amallar",
@@ -242,7 +269,7 @@ const Projects = () => {
       title: "Servis",
       dataIndex: "service_id",
       key: "service_id",
-      render: (text) => services.find((s) => s._id === text).service_name,
+      render: (text) => services.find((s) => s._id === text)?.service_name,
     },
     {
       title: "Ishchi",
@@ -256,11 +283,11 @@ const Projects = () => {
       key: "amount_to_paid",
       render: (text) => text.amount?.toLocaleString() + " " + text.currency,
     },
-    {
-      title: "Maosh turi",
-      dataIndex: "salaryType",
-      render: (text) => text === "salary" ? "Maosh" : text === "percent" ? "Foiz" : text === "percent_with_profit" ? "% + foyda" : "Nomalum"
-    },
+    // {
+    //   title: "Maosh turi",
+    //   dataIndex: "salaryType",
+    //   render: (text) => text === "salary" ? "Maosh" : text === "percent" ? "Foiz" : text === "percent_with_profit" ? "% + foyda" : "Nomalum"
+    // },
     {
       title: "Maosh",
       dataIndex: "user_salary_amount",
@@ -280,27 +307,27 @@ const Projects = () => {
       key: "end_time",
       render: (text) => moment(text).format("YYYY-MM-DD"),
     },
-    {
-      title: "Xarajatlar",
-      render: (_, record) => (
-        <div className="table_actions">
-          <Popover
-            placement="bottom"
-            title={"Servisning barcha xarajatlari"}
-            content={
-              <Table
-                dataSource={record?.spendings}
-                columns={spendingsTooltipColumns}
-              />
-            }
-          >
-            <button>
-              <FaList />
-            </button>
-          </Popover>
-        </div>
-      ),
-    },
+    // {
+    //   title: "Xarajatlar",
+    //   render: (_, record) => (
+    //     <div className="table_actions">
+    //       <Popover
+    //         placement="bottom"
+    //         title={"Servisning barcha xarajatlari"}
+    //         content={
+    //           <Table
+    //             dataSource={record?.spendings}
+    //             columns={spendingsTooltipColumns}
+    //           />
+    //         }
+    //       >
+    //         <button>
+    //           <FaList />
+    //         </button>
+    //       </Popover>
+    //     </div>
+    //   ),
+    // },
     {
       title: "Pauza",
       render: (_, record) => (
@@ -416,6 +443,49 @@ const Projects = () => {
             </select>
           </label>
           <button>To'lash</button>
+        </form>
+      </Modal>
+      <Modal
+        title="Xarajat qo'shish"
+        footer={[]}
+        onCancel={() => {
+          setSpendingModal(false);
+          setSpendingProject("");
+        }}
+        open={spendingModal}
+      >
+        <form
+          autoComplete='off'
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const amount = Number(e.target.amount.value);
+            const description = e.target.description.value;
+
+            try {
+              await createSpending({
+                body: { amount, description },
+                project_id: spendingProject,
+              });
+
+              message.success("Xarajat qo'shildi");
+              setSpendingModal(false);
+              setSpendingProject("");
+            } catch (error) {
+              message.error("Xarajat qo'shishda xatolik");
+            }
+          }}
+          className="modal_form"
+        >
+          <label htmlFor="amount">
+            <p>Xarajat summasi</p>
+            <input name="amount" type="number" id="amount" required />
+          </label>
+          <label htmlFor="description">
+            <p>Xarajat tavsifi</p>
+            <input name="description" type="text" id="description" required />
+
+          </label>
+          <button>Saqlash</button>
         </form>
       </Modal>
       <div className="manager_page_header">

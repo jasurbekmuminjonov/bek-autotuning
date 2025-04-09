@@ -423,3 +423,28 @@ exports.pauseToggle = async (req, res) => {
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 }
+
+exports.createSpending = async (req, res) => {
+    try {
+        const { amount, description } = req.body
+        const { project_id } = req.params
+        const project = await Project.findById(project_id)
+
+        if (!project.spendings) {
+            project.spendings = [];
+        }
+
+        project.spendings.push({
+            amount,
+            description
+        })
+        project.net_profit -= amount
+
+        await project.save()
+        return res.json({ message: "Xarajat qo'shildi" })
+
+    } catch (err) {
+        console.log(err.message)
+        return res.status(500).json({ message: "Serverda xatolik" });
+    }
+}
