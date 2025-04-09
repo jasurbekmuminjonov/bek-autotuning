@@ -113,10 +113,12 @@ const Salary = () => {
         lateOrAbsentCount++;
       }
     }
-    if (totalPenalty <= 0) {
+
+    const finalPenalty = totalPenalty - 240000
+    if (finalPenalty <= 0) {
       return 0;
     }
-    return totalPenalty - 240000;
+    return finalPenalty;
   };
 
 
