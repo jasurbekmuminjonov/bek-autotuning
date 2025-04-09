@@ -113,7 +113,9 @@ const Salary = () => {
         lateOrAbsentCount++;
       }
     }
-
+    if (totalPenalty <= 0) {
+      return 0;
+    }
     return totalPenalty - 240000;
   };
 
@@ -240,7 +242,6 @@ const Salary = () => {
             lateOrAbsentCount++;
           }
         }
-        console.log(penalties);
 
         return (
           <Popover
@@ -279,11 +280,11 @@ const Salary = () => {
               {
                 title: "Mashina",
                 dataIndex: "project_id",
-                render: (text) => projects.find(p => p._id === text).car_name + " - " + projects.find(p => p._id === text).car_number
+                render: (text) => projects.find(p => p._id === text)?.car_name + " - " + projects.find(p => p._id === text)?.car_number
               },
               {
                 title: "Servis",
-                render: (_, record) => services.find(s => s._id === projects.find(p => p._id === record.project_id).services_providing.find(p => p._id === record.service_id).service_id).service_name
+                render: (_, record) => services.find(s => s._id === projects.find(p => p._id === record.project_id)?.services_providing.find(p => p._id === record.service_id)?.service_id)?.service_name
               },
               {
                 title: "Kech qolish kunlari",
@@ -397,6 +398,8 @@ const Salary = () => {
       ),
     },
   ];
+
+
 
 
   return (
