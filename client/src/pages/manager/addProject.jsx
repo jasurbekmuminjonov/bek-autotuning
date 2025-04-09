@@ -116,6 +116,7 @@ const AddProject = () => {
             message.error("Rasmni yuklashda xatolik yuz berdi.");
         }
     };
+    console.log(errors);
 
 
     return (
@@ -137,7 +138,9 @@ const AddProject = () => {
                                 Klent ismi
                             </p>
                             <input {...register("client_name", { required: "Klent ismini kiriting" })} type="text" id="client_name" />
+                            {errors.client_name && <span style={{ color: 'red' }}>{errors.client_name.message}</span>}
                         </label>
+
                         <label htmlFor="client_phone">
                             <p>
                                 <FaStarOfLife size={8} />
@@ -152,6 +155,7 @@ const AddProject = () => {
                                     e.preventDefault();
                                 }}
                             />
+                            {errors.client_phone && <span style={{ color: 'red' }}>{errors.client_phone.message}</span>}
                         </label>
                         <label htmlFor="car_name">
                             <p>
@@ -159,6 +163,7 @@ const AddProject = () => {
                                 Mashina nomi
                             </p>
                             <input {...register("car_name", { required: "Mashina nomini kiriting" })} type="text" id="car_name" />
+                            {errors.car_name && <span style={{ color: 'red' }}>{errors.car_name.message}</span>}
                         </label>
                         <label htmlFor="car_number">
                             <p>
@@ -168,6 +173,7 @@ const AddProject = () => {
                             <input onWheel={(e) => {
                                 e.preventDefault();
                             }}  {...register("car_number", { required: "Mashina raqamini kiriting" })} type="text" id="car_number" />
+                            {errors.car_number && <span style={{ color: 'red' }}>{errors.car_number.message}</span>}
                         </label>
                         <label htmlFor="car_id">
                             <p>
@@ -177,6 +183,7 @@ const AddProject = () => {
                             <input onWheel={(e) => {
                                 e.preventDefault();
                             }}  {...register("car_id", { required: "Mashina ID sini kiriting" })} type="text" id="car_id" />
+                            {errors.car_id && <span style={{ color: 'red' }}>{errors.car_id.message}</span>}
                         </label>
 
                         <label htmlFor="total_profit">
@@ -185,7 +192,7 @@ const AddProject = () => {
                                 Kelishuv summasi
                             </p>
                             <input type="number" id="total_profit" {...register("total_profit", { required: "Kelishuv summasini kiriting" })} />
-                            {errors.total_profit && <span>{errors.total_profit}</span>}
+                            {errors.total_profit && <span style={{ color: 'red' }}>{errors.total_profit.message}</span>}
                         </label>
                         <label htmlFor="currency">
                             <p>
@@ -196,12 +203,14 @@ const AddProject = () => {
                                 <option value="USD">USD</option>
                                 <option value="UZS">UZS</option>
                             </select>
+                            {errors.currency && <span style={{ color: 'red' }}>{errors.currency.message}</span>}
                         </label>
                         <label htmlFor="leave_date">
                             <p style={{ fontSize: "14px" }}>
                                 <FaStarOfLife size={8} />
                                 Mashinaning chiqib ketish sanasi</p>
                             <input {...register("leave_date", { required: "Chiqib ketish sanasini kiriting" })} type="date" id="leave_date" />
+                            {errors.leave_date && <span style={{ color: 'red' }}>{errors.leave_date.message}</span>}
                         </label>
                         <label style={{ flexDirection: "row", alignItems: "center", gap: "12px" }} htmlFor="isFree">
                             <p>Bepul</p>
@@ -296,34 +305,75 @@ const AddProject = () => {
                             <div className='service' key={item.id}>
                                 <label>
                                     Servis:
-                                    <select {...register(`services_providing.${index}.service_id`, { required: "Servisni tanlang" })}>
-                                        {
-                                            services?.map((service) => (
-                                                <option key={service._id} value={service._id}>{service.service_name}</option>
-                                            ))
-                                        }
+                                    <select
+                                        {...register(`services_providing.${index}.service_id`, { required: "Servisni tanlang" })}
+                                    >
+                                        {services?.map((service) => (
+                                            <option key={service._id} value={service._id}>
+                                                {service.service_name}
+                                            </option>
+                                        ))}
                                     </select>
+
+                                    {errors?.services_providing?.[index]?.service_id && (
+                                        <span style={{ color: "red" }}>
+                                            {errors.services_providing[index].service_id.message}
+                                        </span>
+                                    )}
                                 </label>
+
                                 <label>
                                     Ishchi:
-                                    <select {...register(`services_providing.${index}.user_id`, { required: "Ishchini tanlang" })}>
-                                        {
-                                            users?.map((user) => (
-                                                <option key={user._id} value={user._id}>{user.name}</option>
-                                            ))
-                                        }
+                                    <select
+                                        {...register(`services_providing.${index}.user_id`, { required: "Ishchini tanlang" })}
+                                    >
+                                        {users?.map((user) => (
+                                            <option key={user._id} value={user._id}>
+                                                {user.name}
+                                            </option>
+                                        ))}
                                     </select>
+                                    {errors?.services_providing?.[index]?.user_id && (
+                                        <span style={{ color: "red" }}>
+                                            {errors.services_providing[index].user_id.message}
+                                        </span>
+                                    )}
                                 </label>
+
                                 <label>
                                     Servis narxi:
-                                    <input disabled={isFree} {...register(`services_providing.${index}.amount_to_paid.amount`)} type="number" onWheel={(e) => {
-                                        e.preventDefault();
-                                    }} />
-                                    <select disabled={isFree} {...register(`services_providing.${index}.amount_to_paid.currency`)}>
+                                    <input
+                                        disabled={isFree}
+                                        {...register(`services_providing.${index}.amount_to_paid.amount`, {
+                                            required: isFree ? false : "Servis narxini kiriting", 
+                                        })}
+                                        type="number"
+                                        onWheel={(e) => {
+                                            e.preventDefault();
+                                        }}
+                                    />
+                                    {errors?.services_providing?.[index]?.amount_to_paid?.amount && (
+                                        <span style={{ color: "red" }}>
+                                            {errors.services_providing[index].amount_to_paid.amount.message}
+                                        </span>
+                                    )}
+
+                                    <select
+                                        disabled={isFree}
+                                        {...register(`services_providing.${index}.amount_to_paid.currency`, {
+                                            required: "Servis narxining valyutasini kiriting",
+                                        })}
+                                    >
                                         <option value="UZS">UZS</option>
                                         <option value="USD">USD</option>
                                     </select>
+                                    {errors?.services_providing?.[index]?.amount_to_paid?.currency && (
+                                        <span style={{ color: "red" }}>
+                                            {errors.services_providing[index].amount_to_paid.currency.message}
+                                        </span>
+                                    )}
                                 </label>
+
                                 {/* <label htmlFor="salaryType">
                                     <p>Maosh turi</p>
                                     <select disabled={isFree} onChange={(e) => {
@@ -352,12 +402,30 @@ const AddProject = () => {
                                 </label> */}
                                 <label>
                                     Boshlash sanasi:
-                                    <input {...register(`services_providing.${index}.start_time`)} type="date" />
+                                    <input
+                                        {...register(`services_providing.${index}.start_time`, { required: "Boshlash sanasini tanlang" })}
+                                        type="date"
+                                    />
+                                    {errors?.services_providing?.[index]?.start_time && (
+                                        <span style={{ color: "red" }}>
+                                            {errors.services_providing[index].start_time.message}
+                                        </span>
+                                    )}
                                 </label>
+
                                 <label>
                                     Tugash sanasi:
-                                    <input {...register(`services_providing.${index}.end_time`)} type="date" />
+                                    <input
+                                        {...register(`services_providing.${index}.end_time`, { required: "Tugash sanasini kiriting" })}
+                                        type="date"
+                                    />
+                                    {errors?.services_providing?.[index]?.end_time && (
+                                        <span style={{ color: "red" }}>
+                                            {errors.services_providing[index].end_time.message}
+                                        </span>
+                                    )}
                                 </label>
+
                                 {/* <h4>Harajatlar</h4> */}
                                 {/* <SpendingsFieldArray control={control} parentIndex={index} register={register} /> */}
                                 <label>
@@ -393,6 +461,8 @@ const AddProject = () => {
     );
 };
 
+
+export default AddProject;
 // const SpendingsFieldArray = ({ control, parentIndex, register }) => {
 //     const { fields, append, remove } = useFieldArray({
 //         control,
@@ -427,5 +497,3 @@ const AddProject = () => {
 //         </>
 //     );
 // };
-
-export default AddProject;
