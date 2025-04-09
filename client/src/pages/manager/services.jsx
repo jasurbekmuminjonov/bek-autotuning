@@ -63,7 +63,7 @@ const Services = () => {
             <Modal open={open} onCancel={() => { setOpen(false); reset({ service_name: "" }) }} title={editingService ? "Servisni tahrirlash" : "Servis qo'shish"} footer={[]}>
                 <form className='modal_form' autoComplete='off' onSubmit={handleSubmit(submitForm)}>
                     <input placeholder='Servis nomi' {...register("service_name", { required: 'Servis nomini kiriting' })} />
-                    {errors.service_name && <span style={{ fontSize: "18px" }} className='error'>{errors.service_name.message}</span>}
+                    {errors.service_name && <span style={{ fontSize: "16px" }} className='error'>{errors.service_name.message}</span>}
                     <button type="primary" htmlType="submit">{editingService ? "Tahrirlash" : "Qo'shish"}</button>
                 </form>
             </Modal>

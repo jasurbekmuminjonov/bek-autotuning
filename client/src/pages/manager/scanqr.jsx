@@ -21,7 +21,7 @@ const Scanqr = () => {
             </Modal>
             <Modal title="Davomatni saqlashda xatolik" footer={[]} open={fail} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <img src={failImg} alt="" />
-                <p style={{ textAlign: "center", fontSize: "25px" }}>{errorText}</p>
+                <p style={{ textAlign: "center", fontSize: "22px" }}>{errorText}</p>
             </Modal>
             <form autoComplete='off' onSubmit={async (e) => {
                 e.preventDefault();

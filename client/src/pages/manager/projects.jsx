@@ -91,36 +91,49 @@ const Projects = () => {
       render: (text) => text ? "Ha" : "Yo'q"
     },
     {
-      title: "Qoldiq pul",
+      title: "Sarflangandan qolgan summa",
       key: "_id",
-      render: (_, record) => record.total_profit - record.services_providing.reduce((acc, s) => acc + s.amount_to_paid.amount, 0) - record.spendings.reduce((acc, s) => acc + s.amount, 0),
+      render: (_, record) => (
+        (record.total_profit
+          - record.services_providing.reduce((acc, s) => acc + s.amount_to_paid.amount, 0)
+          - record.spendings.reduce((acc, s) => acc + s.amount, 0)).toFixed(2)
+      ),
     },
     {
-      title: "Sof foyda",
+      title: "Servislardan jami 20% sof foyda",
       key: "_id",
-      render: (_, record) => record.services_providing.reduce((acc, s) => acc + s.net_profit.amount, 0),
+      render: (_, record) => (
+        record.services_providing.reduce((acc, s) => acc + s.net_profit.amount, 0).toFixed(2)
+      ),
     },
     {
       title: "Jami foyda",
-      render: (_, record) => record.total_profit - record.services_providing.reduce((acc, s) => acc + s.amount_to_paid.amount, 0) - record.spendings.reduce((acc, s) => acc + s.amount, 0) + record.services_providing.reduce((acc, s) => acc + s.net_profit.amount, 0)
+      render: (_, record) => (
+        (
+          record.total_profit
+          - record.services_providing.reduce((acc, s) => acc + s.amount_to_paid.amount, 0)
+          - record.spendings.reduce((acc, s) => acc + s.amount, 0)
+          + record.services_providing.reduce((acc, s) => acc + s.net_profit.amount, 0)
+        ).toFixed(2)
+      ),
     },
     {
-      title: "Jami to'lov",
+      title: "Jami qilinadigan to'lov",
       dataIndex: "total_amount_to_paid",
       key: "_id",
-      render: (text) => text?.toLocaleString(),
+      render: (text) => Number(text).toFixed(2),
     },
     {
-      title: "Qilingan to'lov",
+      title: "Jami qilingan to'lov",
       dataIndex: "total_amount_paid",
       key: "_id",
-      render: (text) => text?.toLocaleString(),
+      render: (text) => Number(text).toFixed(2),
     },
     {
-      title: "Qolgan to'lov",
+      title: "Jami qolgan to'lov",
       dataIndex: "remained_amount_to_paid",
       key: "_id",
-      render: (text) => text?.toLocaleString(),
+      render: (text) => Number(text).toFixed(2),
     },
     {
       title: "Servis",
@@ -292,7 +305,8 @@ const Projects = () => {
       title: "Maosh",
       dataIndex: "user_salary_amount",
       key: "user_salary_amount",
-      render: (text) => text.amount?.toLocaleString() + " " + text.currency,
+      render: (text) =>
+        (Math.floor(text.amount / 1000) * 1000).toLocaleString() + " " + text.currency,
     },
     { title: "Holat", dataIndex: "status", render: (text) => status[text] },
     {
@@ -507,7 +521,7 @@ const Projects = () => {
           <BiSearchAlt2 />
         </div>
       </div>
-      <Table size="small" dataSource={filteredProjects} columns={projectsColumns} />
+      <Table size="small" rowClassName={(record) => record?.services_providing.length < 1 ? "warning-row" : null}  dataSource={filteredProjects} columns={projectsColumns} />
     </div>
   );
 };

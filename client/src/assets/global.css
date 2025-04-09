@@ -181,7 +181,7 @@ body::-webkit-scrollbar {
   gap: 6px;
 }
 .manager_page_header > p {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 500;
 }
 .manager_page_header_actions > button {
@@ -229,7 +229,7 @@ body::-webkit-scrollbar {
   align-self: center;
   justify-self: center;
   color: #eaeaea;
-  font-size: 25px;
+  font-size: 22px;
 }
 .project_card {
   width: 100%;
@@ -331,7 +331,7 @@ body::-webkit-scrollbar {
   padding-block-end: 12px;
 }
 .form_part > p {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
 }
 .form_part > label {
@@ -721,7 +721,7 @@ body::-webkit-scrollbar {
   border-bottom: 1px solid #a7a5ad;
 }
 .user_page_header > p {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
 }
 .user_projects {
@@ -807,7 +807,7 @@ body::-webkit-scrollbar {
   width: 100%;
   display: flex;
   gap: 6px;
-  font-size: 18px;
+  font-size: 16px;
 }
 .confirm_title > p {
   font-weight: bold;
@@ -868,7 +868,7 @@ body::-webkit-scrollbar {
   justify-content: center;
   background-color: var(--primary);
   color: #fff;
-  font-size: 20px;
+  font-size: 18px;
   align-self: end;
 }
 .scanqr_container {
@@ -926,4 +926,16 @@ body::-webkit-scrollbar {
   border: 1px solid #000;
   justify-content: center;
   align-items: center;
+}
+.warning-row {
+  background-color: rgba(255, 0, 0, 0.589) !important;
+}
+.ant-table-tbody {
+  background-color: #fff;
+}
+.ant-table-tbody tr {
+  font-size: 12px;
+}
+.ant-table-tbody th {
+  font-size: 12px;
 }

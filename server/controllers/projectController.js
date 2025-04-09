@@ -193,16 +193,85 @@ exports.createProject = async (req, res) => {
 };
 
 
+// exports.updateProject = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const editingProject = await Project.findById(id);
+//         if (!editingProject) {
+//             return res.status(404).json({ message: "Loyiha topilmadi" });
+//         }
+
+//         const { total_profit, services_providing, currency } = req.body;
+//         const usdRate = await getUsdRate();
+
+//         services_providing.forEach(service => {
+//             let servicePrice;
+
+//             if (currency === "USD") {
+//                 servicePrice = service.amount_to_paid.currency === "USD"
+//                     ? service.amount_to_paid.amount
+//                     : service.amount_to_paid.currency === "UZS"
+//                         ? service.amount_to_paid.amount / usdRate
+//                         : 0;
+//             } else if (currency === "UZS") {
+//                 servicePrice = service.amount_to_paid.currency === "UZS"
+//                     ? service.amount_to_paid.amount
+//                     : service.amount_to_paid.currency === "USD"
+//                         ? service.amount_to_paid.amount * usdRate
+//                         : 0;
+//             }
+
+//             service.net_profit = {
+//                 amount: servicePrice * 0.2,
+//                 currency
+//             };
+
+//             service.user_salary_amount = {
+//                 amount: currency === "USD"
+//                     ? servicePrice * 0.8 * usdRate
+//                     : servicePrice * 0.8,
+//                 currency: "UZS"
+//             };
+//         });
+
+//         const totalSalaries = services_providing.reduce((acc, service) => acc + service.user_salary_amount.amount, 0);
+//         const totalNetProfit = services_providing.reduce((acc, service) => acc + service.net_profit.amount, 0);
+//         // const totalAmountToPaid = services_providing.reduce((acc, service) => acc + service.amount_to_paid.amount, 0)
+
+//         let netProfit;
+
+//         if (currency === "UZS") {
+//             netProfit = total_profit - totalSalaries;
+//         } else if (currency === "USD") {
+//             netProfit = total_profit - (totalSalaries / usdRate + totalNetProfit);
+//         }
+
+//         req.body.total_amount_to_paid = total_profit
+//         req.body.remained_amount_to_paid = total_profit
+//         req.body.net_profit = netProfit;
+//         req.body.services_providing = services_providing;
+
+//         const updatedProject = await Project.findByIdAndUpdate(id, req.body, { new: true });
+
+//         res.json({ message: "Loyiha muvaffaqiyatli yangilandi", project: updatedProject });
+//     } catch (err) {
+//         console.error(err.message);
+//         return res.status(500).json({ message: "Serverda xatolik" });
+//     }
+// };
+
 exports.updateProject = async (req, res) => {
     try {
-        const { id } = req.params;
-        const editingProject = await Project.findById(id);
-        if (!editingProject) {
+        const { total_profit, services_providing, currency } = req.body;
+        const { id } = req.params; 
+        const { admin_id } = req.user;
+        req.body.admin_id = admin_id;
+        const usdRate = await getUsdRate();
+
+        const project = await Project.findById(id);
+        if (!project) {
             return res.status(404).json({ message: "Loyiha topilmadi" });
         }
-
-        const { total_profit, services_providing, currency } = req.body;
-        const usdRate = await getUsdRate();
 
         services_providing.forEach(service => {
             let servicePrice;
@@ -236,7 +305,6 @@ exports.updateProject = async (req, res) => {
 
         const totalSalaries = services_providing.reduce((acc, service) => acc + service.user_salary_amount.amount, 0);
         const totalNetProfit = services_providing.reduce((acc, service) => acc + service.net_profit.amount, 0);
-        // const totalAmountToPaid = services_providing.reduce((acc, service) => acc + service.amount_to_paid.amount, 0)
 
         let netProfit;
 
@@ -246,19 +314,20 @@ exports.updateProject = async (req, res) => {
             netProfit = total_profit - (totalSalaries / usdRate + totalNetProfit);
         }
 
-        req.body.total_amount_to_paid = total_profit
-        req.body.remained_amount_to_paid = total_profit
+        req.body.total_amount_to_paid = total_profit;
+        req.body.remained_amount_to_paid = total_profit;
         req.body.net_profit = netProfit;
-        req.body.services_providing = services_providing;
 
-        const updatedProject = await Project.findByIdAndUpdate(id, req.body, { new: true });
+        Object.assign(project, req.body);
+        await project.save();
 
-        res.json({ message: "Loyiha muvaffaqiyatli yangilandi", project: updatedProject });
+        res.json({ message: "Loyiha yangilandi" });
     } catch (err) {
-        console.error(err.message);
+        console.log(err.message);
         return res.status(500).json({ message: "Serverda xatolik" });
     }
 };
+
 
 
 exports.deleteProject = async (req, res) => {
