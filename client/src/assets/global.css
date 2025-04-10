@@ -939,3 +939,9 @@ body::-webkit-scrollbar {
 .ant-table-tbody th {
   font-size: 12px;
 }
+/* .warning-row:hover{
+  background-color: rgba(255, 0, 0, 0.589);
+} */
+.warning-row > .ant-table-cell-row-hover{
+  background-color: transparent !important;
+}

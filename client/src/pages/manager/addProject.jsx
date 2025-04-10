@@ -84,7 +84,10 @@ const AddProject = () => {
                     // }))
                 }))
             };
-
+            if (!frontImage || !backImage || !rightImage || !leftImage) {
+                message.error("Barcha rasmlarni kiriting")
+                return
+            }
             if (id) {
                 editProject({ body: formattedData, project_id: id });
             } else {
