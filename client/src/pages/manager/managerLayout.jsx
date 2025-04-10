@@ -30,7 +30,6 @@ const ManagerLayout = () => {
                         Mashina qo'shish</Link>
                     <Link className={`aside_link ${location.pathname === "/user" && "active"}`} to="/user">
                         <FaUser />
-
                         Ishchilar</Link>
                     <Link className={`aside_link ${location.pathname === "/service" && "active"}`} to="/service">
                         <FaTools />
