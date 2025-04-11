@@ -8,10 +8,12 @@ exports.recordAttendance = async (req, res) => {
         const userArriveTime = moment(user.start_time, "HH:mm");
         const userLeaveTime = moment(user.end_time, "HH:mm");
         const formattedDate = moment(date).format("DD.MM.YYYY");
+        console.log(date);
 
-        const isLeaved = user.attendance.find(a =>
-            moment(a.arrive_time).format("DD.MM.YYYY") === formattedDate
+        const isLeaved = user.attendance.find(a => 
+            moment(a.arrive_time).isSame(date, 'day')
         );
+        
 
         if (isLeaved) {
             const leaveDiff = moment(date).diff(moment(isLeaved.arrive_time), 'minutes');
@@ -39,6 +41,7 @@ exports.recordAttendance = async (req, res) => {
             });
 
             const arriveDiff = moment(moment(date).format("HH:mm"), "HH:mm").diff(userArriveTime, 'minutes');
+            console.log(arriveDiff);
 
             if (arriveDiff > 10) {
                 user.delays.push({

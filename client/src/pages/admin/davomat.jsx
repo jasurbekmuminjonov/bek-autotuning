@@ -55,7 +55,7 @@ const Davomat = () => {
             title: "Jarima",
             render: (_, record) => {
                 const today = moment().format("YYYY-MM-DD");
-                const isPast = moment(selectedDate).isBefore(today, "day");
+                const isPast = moment(selectedDate).isSameOrBefore(today, "day");
                 const isWeekend = record.weekends.some(t =>
                     moment(t).format("YYYY-MM-DD") === selectedDate
                 );
