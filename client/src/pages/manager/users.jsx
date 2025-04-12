@@ -138,6 +138,10 @@ const Users = () => {
 
     async function submitForm(data) {
         try {
+            if (!imageUrl) {
+                message.error("Rasmni kiriting")
+                return
+            }
             data.start_time = typeof data.start_time === "string"
                 ? data.start_time
                 : dayjs(data.start_time).format("HH:mm");
@@ -151,8 +155,10 @@ const Users = () => {
                 createUser(data)
             }
             setVisible(false);
-            reset({ name: "", login: "", password: "", start_time: "", end_time: "" });
+            reset({ name: "", login: "", password: "", start_time: "", end_time: "", last_name: "", middle_name: "", first_phone: "", second_phone: "" });
             setEditingUser("")
+            setImageUrl("")
+
             message.success("Ishchi saqlandi!");
         } catch (error) {
             console.error(error);
@@ -171,7 +177,9 @@ const Users = () => {
             </Modal>
             <Modal open={visible} title={editingUser ? "Ishchini tahrirlash" : "Ishchi qo'shish"} footer={[]} onCancel={() => {
                 setVisible(false);
-                reset({ name: "", login: "", password: "", start_time: "", end_time: "" });
+                reset({ name: "", login: "", password: "", start_time: "", end_time: "", last_name: "", middle_name: "", first_phone: "", second_phone: "" });
+                setImageUrl("")
+
             }}>
                 <form autoComplete='off' onSubmit={handleSubmit(submitForm)} className="modal_form">
                     <input type="text" {...register("name", { required: "Ismni kiriting" })} placeholder='Ishchi ismi' />
@@ -255,7 +263,7 @@ const Users = () => {
                 <div className="manager_page_header_actions">
                     <button onClick={() => {
                         setVisible(true);
-                        reset({ name: "", login: "", password: "", start_time: "", end_time: "" });
+                        reset({ name: "", login: "", password: "", start_time: "", end_time: "", last_name: "", middle_name: "", first_phone: "", second_phone: "" });
                         setEditingUser("");
                         setImageUrl("")
                     }}>
