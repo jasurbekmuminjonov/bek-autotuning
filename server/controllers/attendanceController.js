@@ -27,7 +27,10 @@ exports.recordAttendance = async (req, res) => {
                 return res.status(400).json({ message: "Ketish vaqti juda erta" });
             }
 
-            isLeaved.leave_time = date;
+            const newDate = new Date(date);
+            newDate.setHours(newDate.getHours() + 5);
+            isLeaved.leave_time = newDate.toLocaleString();
+
 
             // Erta ketish tekshiruvi
             const earlyLeaveDiff = userLeaveTime.diff(requestDate.clone().startOf('day').add(requestDate.hours(), 'hours').add(requestDate.minutes(), 'minutes'), 'minutes');

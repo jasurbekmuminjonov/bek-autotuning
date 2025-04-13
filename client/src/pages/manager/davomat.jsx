@@ -30,7 +30,7 @@ const Davomat = () => {
       key: "leave_time",
       render: (attendance) => {
         const record = attendance.find(a => moment(a.leave_time).format("YYYY-MM-DD") === selectedDate);
-        return record ? moment(record.leave_time).format("HH:mm") : "—";
+        return record ? moment(record.leave_time).utc().format("HH:mm") : "—";
       }
     },
     {
@@ -62,7 +62,7 @@ const Davomat = () => {
 
         if (moment(record.createdAt).isAfter(selectedDate, "day") || !isPast || isWeekend) {
           return (
-            <span style={{ padding: "6px", background: "green", color: "#fff" }}>
+            <span >
               {"0 UZS"}
             </span>
           );
@@ -115,17 +115,19 @@ const Davomat = () => {
         }
         if (fine === 0) {
           return (
-            <span style={{ padding: "6px", background: "green", color: "#fff" }}>
+            <span >
               {"0 UZS"}
             </span>
           );
         }
-
         return (
-          <span style={{ padding: "6px", background: "red", color: "#fff" }}>
-            {fine.toLocaleString() + " UZS"}
+          <span>
+            {(Math.round(fine / 1000) * 1000).toLocaleString() + " UZS"}
           </span>
         );
+
+
+
       },
       key: "_id"
     }

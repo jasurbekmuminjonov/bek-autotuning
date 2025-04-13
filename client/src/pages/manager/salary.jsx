@@ -163,8 +163,11 @@ const Salary = () => {
     { title: "Ishchi", dataIndex: "name", key: "_id" },
     {
       title: "Hisoblangan oylik",
-      render: (_, record) =>
-        totalSalaries[record._id]?.toLocaleString() + " UZS" || 0,
+      render: (_, record) => {
+        const totalSalary = totalSalaries[record._id] || 0;
+        const roundedSalary = Math.round(totalSalary / 1000) * 1000; // Yuzliklar va o'nliklarni 0 qilish
+        return roundedSalary.toLocaleString() + " UZS";
+      }
     },
     {
       title: "Berilgan oylik",
@@ -182,7 +185,7 @@ const Salary = () => {
       title: "Davomat jarimalari",
       render: (_, record) => {
         if (record.isSpecial) {
-          return (<span style={{ padding: "6px", background: "green", color: "#fff" }}>{"0 UZS"}</span>);
+          return (<span >{"0 UZS"}</span>);
         };
         const penalties = [];
 
@@ -263,9 +266,7 @@ const Salary = () => {
               />
             }
           >
-            <span style={penalties.reduce((acc, p) => acc + p.fine, 0) - 240000 > 0
-              ? { padding: "6px", cursor: "pointer", background: "red", color: "#fff" }
-              : { padding: "6px", cursor: "pointer", background: "green", color: "#fff" }}>
+            <span>
               {Number((penalties.reduce((acc, p) => acc + p.fine, 0) - 240000).toFixed()) < 0 ? 0 + " UZS" : Number((penalties.reduce((acc, p) => acc + p.fine, 0) - 240000).toFixed()).toLocaleString() + " UZS"}
             </span>
           </Popover>
@@ -307,19 +308,23 @@ const Salary = () => {
     },
     {
       title: "Qolgan oylik",
-      render: (_, record) =>
-        (
-          totalSalaries[record._id] - calculatePenalties(record) -
-          record?.paychecks
-            .filter((p) =>
-              filters.month
-                ? moment(p.paycheck_date).format("YYYY-MM") === filters.month
-                : true
-            )
-            .reduce((acc, p) => acc + p.amount, 0)
-        )?.toLocaleString() + " UZS" || 0,
+      render: (_, record) => {
+        const total = totalSalaries[record._id] || 0;
+        const penalties = calculatePenalties(record) || 0;
+    
+        const paid = (record?.paychecks || [])
+          .filter(p =>
+            filters.month
+              ? moment(p.paycheck_date).format("YYYY-MM") === filters.month
+              : true
+          )
+          .reduce((acc, p) => acc + p.amount, 0);
+    
+        const remaining = Math.round((total - penalties - paid) / 1000) * 1000;
+    
+        return (remaining || 0).toLocaleString() + " UZS";
+      }
     },
-
     {
       title: "Amallar",
       render: (_, record) => (

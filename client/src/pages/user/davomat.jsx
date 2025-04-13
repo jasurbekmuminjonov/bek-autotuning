@@ -85,11 +85,14 @@ const Davomat = () => {
             </p>            <p>
                 Ketish vaqti: {
                     user?.attendance.find(item => moment(item?.arrive_time).isSame(selectedDate, 'day'))?.leave_time
-                        ? moment(user.attendance.find(item => moment(item.arrive_time).isSame(selectedDate, 'day'))?.leave_time).format("HH:mm")
+                        ? moment(user.attendance.find(item => moment(item.arrive_time).isSame(selectedDate, 'day'))?.leave_time).utc().format("HH:mm")
                         : "-"
                 }
             </p>
-            <p>Jarima: {Number(Math.abs(calculateFine(user)).toFixed()).toLocaleString()}</p>
+            <p>
+                Jarima: {Number(Math.round(Math.abs(calculateFine(user)) / 1000) * 1000).toLocaleString()}
+            </p>
+
         </div>
     );
 };
