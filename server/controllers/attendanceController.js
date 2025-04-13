@@ -1,30 +1,38 @@
-const moment = require('moment');
+const moment = require('moment-timezone');
 const User = require('../models/userModel');
 
 exports.recordAttendance = async (req, res) => {
     try {
         const { user_id, date } = req.body;
-        const user = await User.findById(user_id);
-        const userArriveTime = moment(user.start_time, "HH:mm");
-        const userLeaveTime = moment(user.end_time, "HH:mm");
-        const formattedDate = moment(date).format("DD.MM.YYYY");
-        console.log(date);
 
-        const isLeaved = user.attendance.find(a => 
-            moment(a.arrive_time).isSame(date, 'day')
+        // Vaqtni Tashkent bo‘yicha olish
+        const requestDate = moment.tz(date, "Asia/Tashkent");
+        const formattedDate = requestDate.format("DD.MM.YYYY");
+
+        const user = await User.findById(user_id);
+        if (!user) return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
+
+        // User start va end vaqtlarini momentga aylantirish
+        const userArriveTime = moment.tz(user.start_time, "HH:mm", "Asia/Tashkent");
+        const userLeaveTime = moment.tz(user.end_time, "HH:mm", "Asia/Tashkent");
+
+        const isLeaved = user.attendance.find(a =>
+            moment.tz(a.arrive_time, "Asia/Tashkent").isSame(requestDate, 'day')
         );
-        
 
         if (isLeaved) {
-            const leaveDiff = moment(date).diff(moment(isLeaved.arrive_time), 'minutes');
+            // Leave diff hisoblash (qayta kelganini tekshirish uchun)
+            const leaveDiff = requestDate.diff(moment.tz(isLeaved.arrive_time, "Asia/Tashkent"), 'minutes');
             if (leaveDiff < 10) {
                 return res.status(400).json({ message: "Ketish vaqti juda erta" });
             }
+
             isLeaved.leave_time = date;
 
-            const earlyLeaveDiff = userLeaveTime.diff(moment(moment(date).format("HH:mm"), "HH:mm"), 'minutes');
+            // Erta ketish tekshiruvi
+            const earlyLeaveDiff = userLeaveTime.diff(requestDate.clone().startOf('day').add(requestDate.hours(), 'hours').add(requestDate.minutes(), 'minutes'), 'minutes');
             if (earlyLeaveDiff > 10) {
-                const currentDelay = user.delays.find(d => moment(d).format("DD.MM.YYYY") === formattedDate)
+                const currentDelay = user.delays.find(d => moment(d.delay_date).format("DD.MM.YYYY") === formattedDate);
                 if (currentDelay) {
                     currentDelay.delay_minutes += earlyLeaveDiff;
                 } else {
@@ -40,8 +48,8 @@ exports.recordAttendance = async (req, res) => {
                 leave_time: null
             });
 
-            const arriveDiff = moment(moment(date).format("HH:mm"), "HH:mm").diff(userArriveTime, 'minutes');
-            console.log(arriveDiff);
+            const currentTime = requestDate.clone().startOf('day').add(requestDate.hours(), 'hours').add(requestDate.minutes(), 'minutes');
+            const arriveDiff = currentTime.diff(userArriveTime, 'minutes');
 
             if (arriveDiff > 10) {
                 user.delays.push({
@@ -58,4 +66,4 @@ exports.recordAttendance = async (req, res) => {
         console.log(err.message);
         return res.status(500).json({ message: "Serverda xatolik" });
     }
-}
+};
