@@ -10,7 +10,7 @@ import { FaDoorOpen } from "react-icons/fa";
 const AdminHome = () => {
         const { data: projects = [] } = useGetProjectsQuery()
         // const { data: users = [] } = useGetUsersQuery()
-        const [selectedCurrency, setSelectedCurrency] = useState("UZS")
+        const [selectedCurrency, setSelectedCurrency] = useState("USD")
     return (
         <div className='admin_page'>
             <b>Umumiy statistika</b>
