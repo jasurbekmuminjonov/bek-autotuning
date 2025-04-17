@@ -12,6 +12,7 @@ const Scanqr = () => {
   const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const [successText, setSuccessText] = useState("Davomat olindi");
   const qrRef = useRef(null);
 
   useEffect(() => {
@@ -30,20 +31,29 @@ const Scanqr = () => {
             },
             async (decodedText) => {
               try {
-                const userId = decodedText.trim(); // QRdan olingan oddiy user_id
+                const userId = decodedText.trim();
                 if (!userId || userId.length < 10) {
                   throw new Error("QR kod noto‘g‘ri yoki to‘liq emas.");
                 }
 
-                await createDavomat({
+                const res = await createDavomat({
                   user_id: userId,
                   date: moment().tz("Asia/Tashkent").format(),
                 }).unwrap();
 
+                // Javobga qarab yozuvni o‘zgartirish
+                if (res?.status === "kelgan") {
+                  setSuccessText("Kelish vaqti belgilandi");
+                } else if (res?.status === "ketgan") {
+                  setSuccessText("Ketish vaqti belgilandi");
+                } else {
+                  setSuccessText("Davomat olindi");
+                }
+
                 setSuccess(true);
                 setTimeout(() => {
                   setSuccess(false);
-                }, 1000);
+                }, 1500);
               } catch (error) {
                 console.error(error);
                 setFail(true);
@@ -53,7 +63,7 @@ const Scanqr = () => {
                 setTimeout(() => {
                   setFail(false);
                   setErrorText("");
-                }, 1500);
+                }, 2000);
               }
             },
             (errorMessage) => {
@@ -78,9 +88,13 @@ const Scanqr = () => {
   }, []);
 
   return (
-    <div style={{ background: "#f9f7f1" }} className="scanqr_container">
+    <div
+      style={{ background: "#f9f7f1", minHeight: "100vh" }}
+      className="scanqr_container"
+    >
+      {/* Muvaffaqiyatli modal */}
       <Modal
-        title="Davomat saqlandi"
+        title={successText}
         footer={[]}
         open={success}
         style={{
@@ -92,6 +106,7 @@ const Scanqr = () => {
         <img src={successImg} alt="Success" />
       </Modal>
 
+      {/* Xatolik modal */}
       <Modal
         title="Davomatni saqlashda xatolik"
         footer={[]}
@@ -106,18 +121,24 @@ const Scanqr = () => {
         <p style={{ textAlign: "center", fontSize: "22px" }}>{errorText}</p>
       </Modal>
 
+      {/* Kamera va skan gif */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          paddingTop: "20px",
         }}
       >
         <p style={{ fontSize: "18px", marginBottom: "10px" }}>
           Kamerani yo'naltiring va QR kodni o'qing:
         </p>
         <div id="qr-reader" style={{ width: "300px" }}></div>
-        <img src={scangif} alt="scan gif" style={{ marginTop: "20px" }} />
+        <img
+          src={scangif}
+          alt="scan gif"
+          style={{ marginTop: "20px", width: "100px" }}
+        />
       </div>
     </div>
   );
