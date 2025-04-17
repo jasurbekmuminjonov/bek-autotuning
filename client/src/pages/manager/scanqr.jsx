@@ -16,32 +16,34 @@ const Scanqr = () => {
 
   useEffect(() => {
     const qrCodeScanner = new Html5Qrcode("qr-reader");
+
     Html5Qrcode.getCameras().then((devices) => {
       if (devices && devices.length) {
         const cameraId = devices[0].id;
+
         qrCodeScanner
           .start(
             cameraId,
             {
-              fps: 10, // Frame per second
+              fps: 10,
               qrbox: { width: 250, height: 250 },
             },
             async (decodedText) => {
               try {
-                const parsed = JSON.parse(decodedText);
-                if (parsed.user_id) {
-                  await createDavomat({
-                    user_id: parsed.user_id,
-                    date: moment().tz("Asia/Tashkent").format(),
-                  }).unwrap();
-
-                  setSuccess(true);
-                  setTimeout(() => {
-                    setSuccess(false);
-                  }, 1000);
-                } else {
-                  throw new Error("QR code tarkibi noto‘g‘ri");
+                const userId = decodedText.trim(); // QRdan olingan oddiy user_id
+                if (!userId || userId.length < 10) {
+                  throw new Error("QR kod noto‘g‘ri yoki to‘liq emas.");
                 }
+
+                await createDavomat({
+                  user_id: userId,
+                  date: moment().tz("Asia/Tashkent").format(),
+                }).unwrap();
+
+                setSuccess(true);
+                setTimeout(() => {
+                  setSuccess(false);
+                }, 1000);
               } catch (error) {
                 console.error(error);
                 setFail(true);
@@ -55,8 +57,7 @@ const Scanqr = () => {
               }
             },
             (errorMessage) => {
-              // optional: skanerlashda xatoliklar uchun
-              console.warn(errorMessage);
+              console.warn("Skanerlash xatosi:", errorMessage);
             }
           )
           .catch((err) => {
@@ -88,8 +89,9 @@ const Scanqr = () => {
           justifyContent: "center",
         }}
       >
-        <img src={successImg} alt="" />
+        <img src={successImg} alt="Success" />
       </Modal>
+
       <Modal
         title="Davomatni saqlashda xatolik"
         footer={[]}
@@ -100,7 +102,7 @@ const Scanqr = () => {
           justifyContent: "center",
         }}
       >
-        <img src={failImg} alt="" />
+        <img src={failImg} alt="Fail" />
         <p style={{ textAlign: "center", fontSize: "22px" }}>{errorText}</p>
       </Modal>
 
