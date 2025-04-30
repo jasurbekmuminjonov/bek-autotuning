@@ -1,118 +1,132 @@
-const mongoose = require('mongoose');
-const userSchema = new mongoose.Schema({
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     last_name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     middle_name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     first_phone: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     second_phone: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     login: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     start_time: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     end_time: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     admin_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'admin',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "admin",
+      required: true,
     },
     balance: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     image: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     paychecks: {
-        type: [
-            {
-                amount: {
-                    type: Number,
-                    required: true
-                },
-                paycheck_date: {
-                    type: Date,
-                    required: true
-                }
-            }
-        ],
-        default: []
+      type: [
+        {
+          amount: {
+            type: Number,
+            required: true,
+          },
+          paycheck_date: {
+            type: Date,
+            required: true,
+          },
+        },
+      ],
+      default: [],
     },
     delays: {
-        type: [
-            {
-                delay_date: {
-                    type: Date,
-                    required: true
-                },
-                delay_minutes: {
-                    type: Number,
-                    required: true
-                }
-            }
-        ],
-        default: []
+      type: [
+        {
+          delay_date: {
+            type: Date,
+            required: true,
+          },
+          delay_minutes: {
+            type: Number,
+            required: true,
+          },
+        },
+      ],
+      default: [],
     },
     attendance: {
-        type: [{
-            arrive_time: Date,
-            leave_time: Date
-        }],
-        default: []
+      type: [
+        {
+          arrive_time: Date,
+          leave_time: Date,
+        },
+      ],
+      default: [],
     },
     isSpecial: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     weekends: {
-        type: [Date],
-        default: []
+      type: [Date],
+      default: [],
     },
     service_delays: {
-        type: [{
-            delay_days: Number,
-            project_id: String,
-            service_id: String,
-            delay_date: Date
-        }],
-        default: []
+      type: [
+        {
+          delay_days: Number,
+          project_id: String,
+          service_id: String,
+          delay_date: Date,
+        },
+      ],
+      default: [],
     },
     pause_log: {
-        type: [{
-            pause_start: String,
-            pause_end: String,
-            scheduled_time: String,
-            delay_minutes: Number
-        }],
-        default: []
-    }
+      type: [
+        {
+          pause_start: String,
+          pause_end: String,
+          scheduled_time: String,
+          delay_minutes: Number,
+        },
+      ],
+      default: [],
+    },
+    davomatid: {
+      type: String,
+      default: "",
+    },
+  },
+  { timestamps: true }
+);
 
-}, { timestamps: true });
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model("user", userSchema);
