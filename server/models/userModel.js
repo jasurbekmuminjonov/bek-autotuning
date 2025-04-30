@@ -52,6 +52,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    davomatid: {
+      type: String,
+      default: "123",
+    },
     paychecks: {
       type: [
         {
@@ -120,10 +124,6 @@ const userSchema = new mongoose.Schema(
         },
       ],
       default: [],
-    },
-    davomatid: {
-      type: String,
-      default: "123",
     },
   },
   { timestamps: true }
