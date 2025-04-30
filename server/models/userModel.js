@@ -123,7 +123,7 @@ const userSchema = new mongoose.Schema(
     },
     davomatid: {
       type: String,
-      default: "",
+      default: "123",
     },
   },
   { timestamps: true }
