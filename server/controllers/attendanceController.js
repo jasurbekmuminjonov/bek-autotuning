@@ -13,7 +13,7 @@ exports.recordAttendance = async (req, res) => {
 
     const formattedDate = requestDate.format("DD.MM.YYYY");
 
-    const user = await User.findById(uid);
+    const user = await User.findOne({idcarta:uid});
     if (!user)
       return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
 
