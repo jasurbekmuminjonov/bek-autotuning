@@ -3,13 +3,14 @@ const User = require('../models/userModel');
 
 exports.recordAttendance = async (req, res) => {
     try {
-        const { user_id, date } = req.body;
+        const { uid, date } = req.body;
 
         // Vaqtni Tashkent bo‘yicha olish
         const requestDate = moment.tz(date, "Asia/Tashkent");
         const formattedDate = requestDate.format("DD.MM.YYYY");
 
-        const user = await User.findById(user_id);
+        // const user = await User.findById(user_id);
+        const user = await User.findOne({ idcarta:uid});
         if (!user) return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
 
         // User start va end vaqtlarini momentga aylantirish
