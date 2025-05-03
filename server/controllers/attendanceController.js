@@ -1,71 +1,75 @@
-const moment = require('moment-timezone');
-const User = require('../models/userModel');
+const moment = require("moment-timezone");
+const User = require("../models/userModel");
 
 exports.recordAttendance = async (req, res) => {
-    try {
-        const { user_id, date } = req.body;
+  try {
+    const { uid, date } = req.body;
+    console.log("req.body", req.body);
 
-        // Vaqtni Tashkent bo‘yicha olish
-        const requestDate = moment.tz(date, "Asia/Tashkent");
-        const formattedDate = requestDate.format("DD.MM.YYYY");
+    // ✅ Date kelmasa, hozirgi Tashkent vaqti
+    const requestDate = date
+      ? moment.tz(date, "Asia/Tashkent")
+      : moment.tz("Asia/Tashkent");
 
-        const user = await User.findById(user_id);
-        if (!user) return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
+    const formattedDate = requestDate.format("DD.MM.YYYY");
 
-        // User start va end vaqtlarini momentga aylantirish
-        const userArriveTime = moment.tz(user.start_time, "HH:mm", "Asia/Tashkent");
-        const userLeaveTime = moment.tz(user.end_time, "HH:mm", "Asia/Tashkent");
+    const user = await User.findOne({idcarta:uid});
+    if (!user)
+      return res.status(404).json({ message: "Foydalanuvchi topilmadi" });
 
-        const isLeaved = user.attendance.find(a =>
-            moment.tz(a.arrive_time, "Asia/Tashkent").isSame(requestDate, 'day')
+    const userArriveTime = moment.tz(user.start_time, "HH:mm", "Asia/Tashkent");
+    const userLeaveTime = moment.tz(user.end_time, "HH:mm", "Asia/Tashkent");
+
+    const isLeaved = user.attendance.find((a) =>
+      moment.tz(a.arrive_time, "Asia/Tashkent").isSame(requestDate, "day")
+    );
+
+    if (isLeaved) {
+      const leaveDiff = requestDate.diff(
+        moment.tz(isLeaved.arrive_time, "Asia/Tashkent"),
+        "minutes"
+      );
+      if (leaveDiff < 10) {
+        return res.status(400).json({ message: "Ketish vaqti juda erta" });
+      }
+
+      isLeaved.leave_time = requestDate.clone().add(5, "hours").toISOString();
+
+      const earlyLeaveDiff = userLeaveTime.diff(requestDate.clone(), "minutes");
+      if (earlyLeaveDiff > 10) {
+        const currentDelay = user.delays.find(
+          (d) => moment(d.delay_date).format("DD.MM.YYYY") === formattedDate
         );
-
-        if (isLeaved) {
-            const leaveDiff = requestDate.diff(moment.tz(isLeaved.arrive_time, "Asia/Tashkent"), 'minutes');
-            if (leaveDiff < 10) {
-                return res.status(400).json({ message: "Ketish vaqti juda erta" });
-            }
-
-            const newDate = new Date(date);
-            newDate.setHours(newDate.getHours() + 5);
-            isLeaved.leave_time = newDate.toLocaleString();
-
-
-            // Erta ketish tekshiruvi
-            const earlyLeaveDiff = userLeaveTime.diff(requestDate.clone().startOf('day').add(requestDate.hours(), 'hours').add(requestDate.minutes(), 'minutes'), 'minutes');
-            if (earlyLeaveDiff > 10) {
-                const currentDelay = user.delays.find(d => moment(d.delay_date).format("DD.MM.YYYY") === formattedDate);
-                if (currentDelay) {
-                    currentDelay.delay_minutes += earlyLeaveDiff;
-                } else {
-                    user.delays.push({
-                        delay_date: date,
-                        delay_minutes: earlyLeaveDiff
-                    });
-                }
-            }
+        if (currentDelay) {
+          currentDelay.delay_minutes += earlyLeaveDiff;
         } else {
-            user.attendance.push({
-                arrive_time: date,
-                leave_time: null
-            });
-
-            const currentTime = requestDate.clone().startOf('day').add(requestDate.hours(), 'hours').add(requestDate.minutes(), 'minutes');
-            const arriveDiff = currentTime.diff(userArriveTime, 'minutes');
-
-            if (arriveDiff > 10) {
-                user.delays.push({
-                    delay_date: date,
-                    delay_minutes: arriveDiff
-                });
-            }
+          user.delays.push({
+            delay_date: requestDate.toISOString(),
+            delay_minutes: earlyLeaveDiff,
+          });
         }
+      }
+    } else {
+      user.attendance.push({
+        arrive_time: requestDate.toISOString(),
+        leave_time: null,
+      });
 
-        await user.save();
-        return res.json({ message: "Saqlandi" });
+      const currentTime = requestDate.clone();
+      const arriveDiff = currentTime.diff(userArriveTime, "minutes");
 
-    } catch (err) {
-        console.log(err.message);
-        return res.status(500).json({ message: "Serverda xatolik" });
+      if (arriveDiff > 10) {
+        user.delays.push({
+          delay_date: requestDate.toISOString(),
+          delay_minutes: arriveDiff,
+        });
+      }
     }
+
+    await user.save();
+    return res.json({ message: "Saqlandi" });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({ message: "Serverda xatolik" });
+  }
 };
