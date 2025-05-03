@@ -21,7 +21,6 @@ exports.recordAttendance = async (req, res) => {
         );
 
         if (isLeaved) {
-            // Leave diff hisoblash (qayta kelganini tekshirish uchun)
             const leaveDiff = requestDate.diff(moment.tz(isLeaved.arrive_time, "Asia/Tashkent"), 'minutes');
             if (leaveDiff < 10) {
                 return res.status(400).json({ message: "Ketish vaqti juda erta" });

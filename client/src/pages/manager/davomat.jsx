@@ -29,8 +29,8 @@ const Davomat = () => {
       dataIndex: "attendance",
       key: "leave_time",
       render: (attendance) => {
-        const record = attendance.find(a => moment(a.leave_time).format("YYYY-MM-DD") === selectedDate);
-        return record ? moment(record.leave_time).utc().format("HH:mm") : "—";
+        const record = attendance.find(a => moment(a.arrive_time).format("YYYY-MM-DD") === selectedDate);
+        return record?.leave_time ? moment(record.leave_time).utc().format("HH:mm") : "—";
       }
     },
     {
